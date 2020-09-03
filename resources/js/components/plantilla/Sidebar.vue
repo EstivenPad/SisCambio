@@ -32,7 +32,7 @@
                 </p>
                 </router-link>
             </li>
-            <li class="nav-header">OPERACIONES</li>            
+            <li class="nav-header">OPERACIONES</li>
             <li class="nav-item">
                 <router-link class="nav-link" :to="'/cliente'" >
                 <i class="nav-icon fas fa-user-friends"></i>
@@ -70,13 +70,13 @@
                 </router-link>
             </li>
             <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
+                <router-link class="nav-link" :to="'/rol'" >
                 <i class="nav-icon fas fa-unlock-alt"></i>
                 <p>Roles</p>
                 </router-link>
             </li>
             <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
+                <router-link class="nav-link" :to="'/permiso'" >
                 <i class="nav-icon fas fa-key"></i>
                 <p>Permisos</p>
                 </router-link>

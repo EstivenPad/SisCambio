@@ -9,6 +9,9 @@ Route::get('/usuario/getUsuarioEditar', 'UsuarioController@getUsuarioEditar');
 Route::post('/usuario/setEditarUsuario', 'UsuarioController@setEditarUsuario');
 Route::post('/usuario/setCambiarEstadoUsuario', 'UsuarioController@setCambiarEstadoUsuario');
 
+/*************** Permisos ******************/
+Route::get('/permiso/getListaPermisos', 'PermisosController@getListaPermisos');
+
 /*************** Cliente ******************/
 
 Route::get('/cliente/getListaClientes', 'ClienteController@getListaClientes');
