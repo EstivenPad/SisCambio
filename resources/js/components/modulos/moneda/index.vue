@@ -53,7 +53,7 @@
                       </td>
                       <td>
                         <template v-if="item.estado == 1">
-                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'cliente.editar', params: { id: item.id }}">
+                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'moneda.editar', params: { id: item.id }}">
                             <i class="fas fa-pencil-alt"></i> Editar
                           </router-link>
                           <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoMoneda(1, item.id, criterio)">

@@ -38,7 +38,7 @@
                       <div class="form-group row">
                         <label class="col-md-3 col-form-label">Precio Compra</label>
                         <div class="col-md-9">
-                          <input type="money" class="form-control" v-model="Moneda.PrecioCompra" @keyup.enter="setRegistrarMoneda()" placeholder="Precio Compra">
+                          <input type="text" class="form-control" v-model="Moneda.PrecioCompra" @keyup.enter="setRegistrarMoneda()" placeholder="Precio Compra">
                         </div>
                       </div>
                     </div>
@@ -46,7 +46,7 @@
                       <div class="form-group row">
                         <label class="col-md-3 col-form-label">Precio Venta</label>
                         <div class="col-md-9">
-                          <input type="money" class="form-control" v-model="Moneda.PrecioVenta" @keyup.enter="setRegistrarMoneda()" placeholder="Precio Venta">
+                          <input type="text" class="form-control" v-model="Moneda.PrecioVenta" @keyup.enter="setRegistrarMoneda()" placeholder="Precio Venta">
                         </div>
                       </div>
                     </div>
@@ -138,18 +138,15 @@
         axios.post(url, this.form, config).then(response => {
           console.log('Se registró la moneda exitosamente');
           this.fullscreenLoading = false;
-          this.$router.push('/cliente');//Redirecciona al index
+          this.$router.push('/moneda');//Redirecciona al index
         });
       },
       validarCampos(){
         this.error = 0;
         this.mensajeError = [];
 
-        if(!this.Cliente.Nombre){
+        if(!this.Moneda.Nombre){
           this.mensajeError.push("El Nombre es un campo obligatorio")
-        }
-        if(!this.Cliente.Apellido){
-          this.mensajeError.push("El Apellido es un campo obligatorio")
         }
 
         if(this.mensajeError.length){

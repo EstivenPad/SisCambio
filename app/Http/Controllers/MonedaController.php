@@ -47,13 +47,13 @@ class MonedaController extends Controller
         
         $moneda = Moneda::findOrFail($request->id);
         
-        $cliente->nombre = $request->nombre;
-        $cliente->precioCompra = $request->precioCompra;
-        $cliente->precioVenta = $request->precioVenta;
-        $cliente->actualizado_por = 1; //Cambiar esta parte cuando se tenga el modulo de Usuarios
-        $cliente->updated_at = now();
+        $moneda->nombre = $request->nombre;
+        $moneda->precioCompra = $request->precioCompra;
+        $moneda->precioVenta = $request->precioVenta;
+        $moneda->actualizado_por = 1; //Cambiar esta parte cuando se tenga el modulo de Usuarios
+        $moneda->updated_at = now();
 
-        $cliente->save();
+        $moneda->save();
     }
 
     public function getMonedaEditar(Request $request)

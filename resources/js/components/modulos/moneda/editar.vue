@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0 text-dark">Editar Cliente</h1>
+          <h1 class="m-0 text-dark">Editar Moneda</h1>
         </div><!-- /.col -->
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -12,7 +12,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-tools">
-            <router-link class="btn btn-info btn-sm" :to="'/cliente'">
+            <router-link class="btn btn-info btn-sm" :to="'/moneda'">
               <i class="fas fa-arrow-left"></i> Regresar
             </router-link>
           </div>
@@ -21,7 +21,7 @@
           <div class="container-fluid">
             <div class="card card-info">
               <div class="card-header">
-                <h3 class="card-title">Formulario Editar Cliente</h3>
+                <h3 class="card-title">Formulario Editar Moneda</h3>
               </div>
               <div class="card-body">
                 <form role="form">
@@ -30,57 +30,25 @@
                       <div class="form-group row">
                         <label class="col-md-3 col-form-label">Nombre</label>
                         <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Cliente.Nombre" @keyup.enter="setEditarCliente()">
+                          <input type="text" class="form-control" v-model="Moneda.Nombre" @keyup.enter="setEditarMoneda()" placeholder="Nombre">
                         </div>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Apellido</label>
+                        <label class="col-md-3 col-form-label">Precio Compra</label>
                         <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Cliente.Apellido" @keyup.enter="setEditarCliente()">
+                          <input type="text" class="form-control" v-model="Moneda.PrecioCompra" @keyup.enter="setEditarMoneda()" placeholder="Precio Compra">
                         </div>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Teléfono</label>
+                        <label class="col-md-3 col-form-label">Precio Venta</label>
                         <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Cliente.Telefono" @keyup.enter="setEditarCliente()">
+                          <input type="text" class="form-control" v-model="Moneda.PrecioVenta" @keyup.enter="setEditarMoneda()" placeholder="Precio Venta">
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Celular</label>
-                        <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Cliente.Celular" @keyup.enter="setEditarCliente()">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Correo Electrónico</label>
-                        <div class="col-md-9">
-                          <input type="email" class="form-control" v-model="Cliente.Email" @keyup.enter="setEditarCliente()">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Dirección</label>
-                        <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Cliente.Direccion" @keyup.enter="setEditarCliente()">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Fotografia</label>
-                        <div class="col-md-9">
-                          <input type="file" @change="getFile">
-                        </div>
-                      </div>
+                      </div>                    
                     </div>
                   </div>
                 </form>
@@ -88,7 +56,7 @@
               <div class="card-footer">
                 <div class="row">
                   <div class="col-md-4 offset-4">
-                    <button class="btn btn-flat btn-info btnWidth" @click.prevent="setEditarCliente" v-loading.fullscreen.lock="fullscreenLoading">Editar</button>
+                    <button class="btn btn-flat btn-info btnWidth" @click.prevent="setEditarMoneda" v-loading.fullscreen.lock="fullscreenLoading">Editar</button>
                     <button class="btn btn-flat btn-default btnWidth" @click.prevent="limpiarCampos">Limpiar</button>
                   </div>
                 </div>
@@ -99,7 +67,7 @@
       </div>
     </div>
 
-    <div class="modal fade" :class="{ show: modalShow }" :style=" modalShow ? mostrarModal : ocultarModal">
+    <div class="modal fade" :class="{ show: modalShow }" :style="modalShow ? mostrarModal : ocultarModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -122,15 +90,11 @@
   export default {
     data(){
       return {
-        Cliente: {
+        Moneda: {
           Id: this.$attrs.id,
           Nombre: '',
-          Apellido: '',
-          Telefono: '',
-          Celular: '',
-          Email: '',
-          Direccion: '',
-          Imagen: ''
+          PrecioCompra: '',
+          PrecioVenta: ''
         },
         form: new FormData,
         fullscreenLoading: false,
@@ -147,24 +111,21 @@
       }
     },
     mounted() {   
-      this.getClientePorId();
+      this.getMonedaPorId();
     },
     methods: {
-      getClientePorId(){
+      getMonedaPorId(){
         this.fullscreenLoading = true;
 
-        var url = '/cliente/getClienteEditar'
+        var url = '/moneda/getMonedaEditar'
         axios.get(url, {
           params: {
-            'id': this.Cliente.Id,
+            'id': this.Moneda.Id,
           }
         }).then(response => {
-          this.Cliente.Nombre = response.data.nombre;
-          this.Cliente.Apellido = response.data.apellido;
-          this.Cliente.Telefono = response.data.telefono;
-          this.Cliente.Celular = response.data.celular;
-          this.Cliente.Email = response.data.email;          
-          this.Cliente.Direccion = response.data.direccion;
+          this.Moneda.Nombre = response.data.nombre;
+          this.Moneda.PrecioCompra = response.data.precioCompra;
+          this.Moneda.PrecioVenta = response.data.precioVenta;
           this.fullscreenLoading = false;
         })
       },
@@ -172,61 +133,47 @@
         this.modalShow = !this.modalShow;
       },
       limpiarCampos(){
-        this.Cliente.Nombre = '';
-        this.Cliente.Apellido = '';
-        this.Cliente.Telefono = '';
-        this.Cliente.Celular = '';
-        this.Cliente.Email = '';
-        this.Cliente.Direccion = '';
+        this.Moneda.Nombre = '';
+        this.Moneda.PrecioCompra = '';
+        this.Moneda.PrecioVenta = '';
       },
-      getFile(e){
-        this.Cliente.Imagen = e.target.files[0];
-      },
-      setEditarCliente(){
+      setEditarMoneda(){
         if(this.validarCampos()){
           this.modalShow = true;
           return;
         }
 
         this.fullscreenLoading = true;
-
-        this.setGuardarCliente();
+        this.setGuardarMoneda();
       },
-      setGuardarCliente(){
-        this.form.append("id", this.Cliente.Id);
-        this.form.append("nombre", this.Cliente.Nombre);
-        this.form.append("apellido", this.Cliente.Apellido);
-        this.form.append("telefono", this.Cliente.Telefono);
-        this.form.append("celular", this.Cliente.Celular);
-        this.form.append("email", this.Cliente.Email);
-        this.form.append("direccion", this.Cliente.Direccion);
-        this.form.append('imagen', this.Cliente.Imagen);
+      setGuardarMoneda(){
+        this.form.append("id", this.Moneda.Id);
+        this.form.append("nombre", this.Moneda.Nombre);
+        this.form.append("precioCompra", this.Moneda.PrecioCompra);
+        this.form.append("precioVenta", this.Moneda.PrecioVenta);
 
         const config = { headers: { 'Content-Type':'multipart/form-data' }};
-        var url = '/cliente/setEditarCliente';
+        var url = '/moneda/setEditarMoneda';
 
         axios.post(url, this.form, config).then(response => {
           this.fullscreenLoading = false;
 
           Swal.fire({
             icon: 'success',
-            title: 'Se actualizó el cliente correctamente',
+            title: 'Se actualizó la moneda correctamente',
             showConfirmButton: false,
             timer: 1530
           });
 
-          this.$router.push('/cliente');//Redirecciona al index
+          this.$router.push('/moneda');//Redirecciona al index
         });
       },
       validarCampos(){
         this.error = 0;
         this.mensajeError = [];
 
-        if(!this.Cliente.Nombre){
+        if(!this.Moneda.Nombre){
           this.mensajeError.push("El Nombre es un campo obligatorio")
-        }
-        if(!this.Cliente.Apellido){
-          this.mensajeError.push("El Apellido es un campo obligatorio")
         }
         if(this.mensajeError.length){
           this.error = 1;

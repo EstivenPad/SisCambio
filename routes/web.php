@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 /*************** Usuario ******************/
+
 Route::get('/usuario/getListaUsuarios', 'UsuarioController@getListaUsuarios');
 Route::post('/usuario/setRegistrarUsuario', 'UsuarioController@setRegistrarUsuario');
 Route::get('/usuario/getUsuarioEditar', 'UsuarioController@getUsuarioEditar');
