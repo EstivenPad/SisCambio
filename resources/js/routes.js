@@ -5,8 +5,19 @@ Vue.use(VueRouter)
 
 export default new VueRouter({
     routes: [
-        { path: '/', component: require('./components/modulos/index.vue').default },
+        /************** Inicio *****************/
+        { path: '/', component: require('./components/modulos/index').default },
+
+        /************** Cliente *****************/
+        { path: '/cliente', component: require('./components/modulos/cliente/index').default },
+        { path: '/cliente/crear', component: require('./components/modulos/cliente/crear').default },
+        { 
+            path: '/cliente/editar/:id', 
+            name: 'cliente.editar',
+            component: require('./components/modulos/cliente/editar').default,
+            props: true 
+        },
     ],
     mode: 'history',
-    linkExactActiveClass: 'active'
+    linkActiveClass: 'active'
 })

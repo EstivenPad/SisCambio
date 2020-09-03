@@ -2,16 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+Route::get('/cliente/getListaClientes', 'ClienteController@getListaClientes');
+Route::post('/cliente/setRegistrarCliente', 'ClienteController@setRegistrarCliente');
+Route::get('/cliente/getClienteEditar', 'ClienteController@getClienteEditar');
+Route::post('/cliente/setEditarCliente', 'ClienteController@setEditarCliente');
+Route::put('/cliente/setCambiarEstadoCliente', 'ClienteController@setCambiarEstadoCliente');
 
 Route::get('/{optional?}', function () {
     return view('app');

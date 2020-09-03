@@ -42,7 +42,7 @@
                 </router-link>
             </li>
             <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
+                <router-link class="nav-link" :to="'/cliente'" >
                 <i class="nav-icon fas fa-user-friends"></i>
                 <p>
                     Clientes

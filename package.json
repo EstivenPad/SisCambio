@@ -24,6 +24,9 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "element-ui": "^2.13.2",
+        "sweetalert2": "^9.17.1",
+        "v-tooltip": "^2.0.3",
         "vue-router": "^3.4.3"
     }
 }
