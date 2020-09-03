@@ -10,6 +10,12 @@ Route::get('/usuario/getUsuarioEditar', 'UsuarioController@getUsuarioEditar');
 Route::post('/usuario/setEditarUsuario', 'UsuarioController@setEditarUsuario');
 Route::post('/usuario/setCambiarEstadoUsuario', 'UsuarioController@setCambiarEstadoUsuario');
 
+/*************** Permisos ******************/
+Route::get('/permiso/getListaPermisos', 'PermisosController@getListaPermisos');
+Route::post('/permiso/setRegistrarPermiso', 'PermisosController@setRegistrarPermiso');
+Route::get('/permiso/getPermisoEditar', 'PermisosController@getPermisoEditar');
+Route::post('permiso/setEditarPermiso', 'PermisosController@setEditarPermiso');
+
 /*************** Cliente ******************/
 
 Route::get('/cliente/getListaClientes', 'ClienteController@getListaClientes');
