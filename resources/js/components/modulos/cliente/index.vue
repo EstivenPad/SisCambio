@@ -147,10 +147,10 @@
           label: 'Apellido'
         }, {
           value: 'A',
-          label: 'Activos'
+          label: 'Activo'
         }, {
           value: 'I',
-          label: 'Inactivos'
+          label: 'Inactivo'
         },],
         filtro: '',
         criterio: '',

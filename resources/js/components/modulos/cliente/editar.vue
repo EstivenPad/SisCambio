@@ -189,7 +189,6 @@
         }
 
         this.fullscreenLoading = true;
-
         this.setGuardarCliente();
       },
       setGuardarCliente(){

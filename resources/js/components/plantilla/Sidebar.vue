@@ -32,20 +32,20 @@
                 </p>
                 </router-link>
             </li>
-            <li class="nav-header">OPERACIONES</li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
-                <i class="nav-icon fas fa-cash-register"></i>
-                <p>
-                    Pedidos
-                </p>
-                </router-link>
-            </li>
+            <li class="nav-header">OPERACIONES</li>            
             <li class="nav-item">
                 <router-link class="nav-link" :to="'/cliente'" >
                 <i class="nav-icon fas fa-user-friends"></i>
                 <p>
                     Clientes
+                </p>
+                </router-link>
+            </li>
+            <li class="nav-item">
+                <router-link class="nav-link" :to="'/moneda'" >
+                <i class="nav-icon fas fa-dollar-sign"></i>
+                <p>
+                    Monedas
                 </p>
                 </router-link>
             </li>
@@ -64,7 +64,7 @@
             </li>
             <li class="nav-header">ADMINISTRACIÓN</li>
             <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
+                <router-link class="nav-link" :to="'/usuario'" >
                 <i class="nav-icon fas fa-users"></i>
                 <p>Usuarios</p>
                 </router-link>

@@ -76,7 +76,7 @@
                     </div>
                     <div class="col-md-6">
                       <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Fotografia</label>
+                        <label class="col-md-3 col-form-label">Fotografía</label>
                         <div class="col-md-9">
                           <input type="file" @change="getFile">
                         </div>
