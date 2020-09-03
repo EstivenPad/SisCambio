@@ -82,7 +82,7 @@
           </div>
 
         <div id="container-floating" v-tooltip.left="'Crear nuevo permiso'">
-            <router-link :to="'/usuario/crear'">
+            <router-link :to="'/permiso/crear'">
                 <div id="floating-button">
                     <p class="plus">+</p>
                     <div class="plusH">

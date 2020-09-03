@@ -22,4 +22,35 @@ class PermisosController extends Controller
 
         return $permisos;
     }
+
+    public function setRegistrarPermiso(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $permiso = new Permisos();
+        $permiso->slug = $request->slug;
+        $permiso->name = $request->nombre;
+        $permiso->created_at = now();
+        $permiso->save();
+    }
+
+    public function getPermisoEditar(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $permiso = Permisos::findOrFail($request->id);
+
+        return $permiso;
+    }
+
+    public function setEditarPermiso(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $permiso = Permisos::findOrFail($request->id);
+        $permiso->slug = $request->slug;
+        $permiso->name = $request->nombre;
+        $permiso->updated_at = now();
+        $permiso->save();
+    }
 }

@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0 text-dark">Crear Usuario</h1>
+          <h1 class="m-0 text-dark">Crear Permiso</h1>
         </div><!-- /.col -->
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -12,7 +12,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-tools">
-            <router-link class="btn btn-info btn-sm" :to="'/usuario'">
+            <router-link class="btn btn-info btn-sm" :to="'/permiso'">
               <i class="fas fa-arrow-left"></i> Regresar
             </router-link>
           </div>
@@ -21,59 +21,38 @@
           <div class="container-fluid">
             <div class="card card-info">
               <div class="card-header">
-                <h3 class="card-title">Formulario Registrar Usuario</h3>
+                <h3 class="card-title">Formulario Registrar Permisos</h3>
               </div>
               <div class="card-body">
                 <form role="form">
                   <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Nombre</label>
-                        <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Usuario.Nombre" @keyup.enter="setRegistrarUsuario()">
+                        <label class=" col-md-2 col-form-label">Nombre</label>
+                        <div class="col-md-6">
+                          <input type="text" class="form-control" v-model="Permiso.Nombre" @keyup.enter="setRegistrarPermiso()">
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Apellido</label>
-                        <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Usuario.Apellido" @keyup.enter="setRegistrarUsuario()">
+                        <label class="col-md-2 col-form-label">Url Amigable</label>
+                        <div class="col-md-6">
+                          <input type="text" class="form-control" v-model="Permiso.Slug" @keyup.enter="setRegistrarPermiso()">
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Usuario</label>
-                        <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Usuario.Usuario" @keyup.enter="setRegistrarUsuario()">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Contraseña</label>
-                        <div class="col-md-9">
-                          <el-input placeholder="Ingrese una Contraseña" v-model="Usuario.Contrasena" @keyup.enter="setRegistrarUsuario" show-password></el-input>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-3 col-form-label">Fotografía</label>
-                        <div class="col-md-9">
-                          <input type="file" @change="getFile">
-                        </div>
-                      </div>
-                    </div>
+
+
                   </div>
                 </form>
-              </div>                
+              </div>
               <div class="card-footer">
                 <div class="row">
                   <div class="col-md-4 offset-4">
-                    <button class="btn btn-info btnWidth" @click.prevent="setRegistrarUsuario" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
-                    <button class="btn btn-default btnWidth" @click.prevent="limpiarCampos">Limpiar</button>
+                       <button class="btn btn-default btnWidth" @click.prevent="limpiarCampos">Limpiar</button>
+                    <button class="btn btn-info btnWidth" @click.prevent="setRegistrarPermiso" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
+
                   </div>
                 </div>
               </div>
@@ -106,14 +85,11 @@
   export default {
     data(){
       return {
-        Usuario: {
+        Permiso: {
           Nombre: '',
-          Apellido: '',
-          Usuario: '',
-          Contrasena: '',
-          Imagen: ''
+          Slug: '',
         },
-        listUsuario: [],
+        listPermiso: [],
         form: new FormData,
         fullscreenLoading: false,
         modalShow: false,
@@ -133,54 +109,41 @@
         this.modalShow = !this.modalShow;
       },
       limpiarCampos(){
-        this.Usuario.Nombre = '';
-        this.Usuario.Apellido = '';
-        this.Usuario.Usuario = '';
-        this.Usuario.Contrasena = '';
-        this.Usuario.Imagen = '';
+        this.Permiso.Nombre = '';
+        this.Permiso.Slug = '';
+
       },
-      getFile(e){
-        this.Usuario.Imagen = e.target.files[0];
-      },
-      setRegistrarUsuario(){
-        if(this.validarRegistrarUsuario()){
+      setRegistrarPermiso(){
+        if(this.validarRegistrarPermiso()){
           this.modalShow = true;
           return;
         }
 
         this.fullscreenLoading = true;
-        this.setGuardarUsuario();
+        this.setGuardarPermiso();
       },
-      setGuardarUsuario(){
-        this.form.append("nombre", this.Usuario.Nombre);
-        this.form.append("apellido", this.Usuario.Apellido);
-        this.form.append("usuario", this.Usuario.Usuario);
-        this.form.append("pass", this.Usuario.Contrasena);
-        this.form.append('imagen', this.Usuario.Imagen)
+      setGuardarPermiso(){
+        this.form.append("nombre", this.Permiso.Nombre);
+        this.form.append("slug", this.Permiso.Slug);
 
-        const config = { headers: { 'Content-Type': 'multipart/form-data' }}; 
-        var url = '/usuario/setRegistrarUsuario';
+        const config = { headers: { 'Content-Type': 'multipart/form-data' }};
+        var url = '/permiso/setRegistrarPermiso';
 
         axios.post(url, this.form, config).then(response => {
-          console.log('Se registró el usuario exitosamente');
-          this.fullscreenLoading = false;
-          this.$router.push('/usuario');
+
+          this.$router.push('/permiso');
         })
       },
-      validarRegistrarUsuario(){
+      validarRegistrarPermiso(){
         this.error = 0;
         this.mensajeError = [];
 
-        if(!this.Usuario.Nombre){
+        if(!this.Permiso.Nombre){
           this.mensajeError.push("El Nombre es un campo obligatorio")
         }
-        if(!this.Usuario.Usuario){
-          this.mensajeError.push("El Usuario es un campo obligatorio")
+        if(!this.Permiso.Slug){
+          this.mensajeError.push("La Url Amigable es obligatorio")
         }
-        if(!this.Usuario.Contrasena){
-          this.mensajeError.push("La Contraseña es un campo obligatorio")
-        }
-
         if(this.mensajeError.length){
           this.error = 1;
         }
