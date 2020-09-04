@@ -109,16 +109,6 @@
     data(){
       return {
         listaMonedas: [],
-        opciones: [{
-          value: 'nombre',
-          label: 'Nombre'
-        }, {
-          value: 'A',
-          label: 'Activos'
-        }, {
-          value: 'I',
-          label: 'Inactivos'
-        },],
         criterio: '',
         pageNumber: 0, //Numero de la pagina actual, que siempre se inicializa en 0
         perPage: 15, //Cantidad de registros por pagina

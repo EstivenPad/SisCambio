@@ -43,9 +43,17 @@
             </li>
             <li class="nav-item">
                 <router-link class="nav-link" :to="'/moneda'" >
-                <i class="nav-icon fas fa-dollar-sign"></i>
+                <i class="nav-icon fas fa-coins"></i>
                 <p>
                     Monedas
+                </p>
+                </router-link>
+            </li>
+            <li class="nav-item">
+                <router-link class="nav-link" :to="'/almacen'" >
+                <i class="nav-icon fas fa-warehouse"></i>
+                <p>
+                    Almacenes
                 </p>
                 </router-link>
             </li>

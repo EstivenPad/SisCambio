@@ -37,16 +37,28 @@ export default new VueRouter({
             component: require('./components/modulos/moneda/editar').default,
             props: true
         },
-           /**************Rol*****************/
-           { path: '/rol', component: require('./components/modulos/rol/index').default },
-           { path: '/rol/crear', component: require('./components/modulos/rol/crear').default },
-           {
+
+        /************** Almacen *****************/
+        { path: '/almacen', component: require('./components/modulos/almacen/index').default },
+        { path: '/almacen/crear', component: require('./components/modulos/almacen/crear').default },
+        {
+            path: '/almacen/editar/:id',
+            name: 'almacen.editar',
+            component: require('./components/modulos/almacen/editar').default,
+            props: true
+        },
+
+        /**************Rol*****************/
+        { path: '/rol', component: require('./components/modulos/rol/index').default },
+        { path: '/rol/crear', component: require('./components/modulos/rol/crear').default },
+        {
             path: '/rol/editar/:id',
             name: 'rol.editar',
             component: require('./components/modulos/rol/editar').default,
             props: true
         },
-                 /**************Permiso*****************/
+        
+        /**************Permiso*****************/
         { path: '/permiso', component: require('./components/modulos/permiso/index').default },
         { path: '/permiso/crear', component: require('./components/modulos/permiso/crear').default },
         {
