@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Permisos;
 class PermisosController extends Controller
 {
-    //
     public function getListaPermisos(Request $request){
         $filtro = $request->filtro;
         $criterio = $request->criterio;
@@ -19,7 +18,6 @@ class PermisosController extends Controller
             $permisos = Permisos::where($filtro,'like','%'.$criterio.'%')->orderBy('id','desc')->get();
         }
 
-
         return $permisos;
     }
 
@@ -30,6 +28,7 @@ class PermisosController extends Controller
         $permiso = new Permisos();
         $permiso->slug = $request->slug;
         $permiso->name = $request->nombre;
+        $permiso->modulo = $request->modulo;
         $permiso->created_at = now();
         $permiso->save();
     }
@@ -50,6 +49,7 @@ class PermisosController extends Controller
         $permiso = Permisos::findOrFail($request->id);
         $permiso->slug = $request->slug;
         $permiso->name = $request->nombre;
+        $permiso->modulo = $request->modulo;
         $permiso->updated_at = now();
         $permiso->save();
     }

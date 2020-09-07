@@ -93,6 +93,7 @@ class ClienteController extends Controller
         $cliente->updated_at = now();
 
         $cliente->save();
+      
     }
 
     public function getClienteEditar(Request $request)

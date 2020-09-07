@@ -19,7 +19,7 @@ mix.styles([
     .js('resources/js/app.js', 'public/js')
     .scripts([
         'resources/vendor/js/adminlte.min.js',
-        'resources/vendor/js/demo.js'
+        'resources/vendor/js/demo.js',
     ], 'public/js/plantilla.js')    
     .copy('resources/vendor/fontawesome/webfonts', 'public/webfonts')
     .copy('resources/vendor/img', 'public/img');

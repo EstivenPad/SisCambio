@@ -42,8 +42,23 @@
                         </div>
                       </div>
                     </div>
-
-
+                    <div class="col-md-12">
+                      <div class="form-group row">
+                        <label class="col-md-2 col-form-label">Módulo</label>
+                        <div class="col-md-6">
+                          <template>
+                            <el-select v-model="Permiso.Modulo" placeholder="Módulo" clearable>
+                              <el-option
+                                v-for="item in opciones"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </template>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -52,7 +67,6 @@
                   <div class="col-md-4 offset-4">
                        <button class="btn btn-default btnWidth" @click.prevent="limpiarCampos">Limpiar</button>
                     <button class="btn btn-info btnWidth" @click.prevent="setRegistrarPermiso" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
-
                   </div>
                 </div>
               </div>
@@ -88,8 +102,25 @@
         Permiso: {
           Nombre: '',
           Slug: '',
+          Modulo: ''
         },
         listPermiso: [],
+        opciones: [{
+          value: 'Usuarios',
+          label: 'Usuarios'
+        }, {
+          value: 'Roles',
+          label: 'Roles'
+        }, {
+          value: 'Clientes',
+          label: 'Clientes'
+        }, {
+          value: 'Monedas',
+          label: 'Monedas'
+        }, {
+          value: 'Almacenes',
+          label: 'Almacenes'
+        }],
         form: new FormData,
         fullscreenLoading: false,
         modalShow: false,
@@ -111,7 +142,7 @@
       limpiarCampos(){
         this.Permiso.Nombre = '';
         this.Permiso.Slug = '';
-
+        this.Permiso.Modulo = '';
       },
       setRegistrarPermiso(){
         if(this.validarRegistrarPermiso()){
@@ -125,6 +156,7 @@
       setGuardarPermiso(){
         this.form.append("nombre", this.Permiso.Nombre);
         this.form.append("slug", this.Permiso.Slug);
+        this.form.append("modulo", this.Permiso.Modulo);
 
         const config = { headers: { 'Content-Type': 'multipart/form-data' }};
         var url = '/permiso/setRegistrarPermiso';
@@ -143,6 +175,9 @@
         }
         if(!this.Permiso.Slug){
           this.mensajeError.push("La Url Amigable es obligatorio")
+        }
+        if(!this.Permiso.Modulo){
+          this.mensajeError.push("El Módulo es obligatorio")
         }
         if(this.mensajeError.length){
           this.error = 1;

@@ -45,6 +45,7 @@
                     <tr>
                       <th>Nombre</th>
                       <th>Url Amigable</th>
+                      <th>Módulo</th>
                       <th>Acciones</th>
                     </tr>
                   </thead>
@@ -53,6 +54,7 @@
 
                       <td v-text="item.name"></td>
                       <td v-text="item.slug"></td>
+                      <td v-text="item.modulo"></td>
 
                       <td>
                         <template>
@@ -106,12 +108,10 @@
         pageNumber: 0,
         perPage: 10,
         fullscreenLoading: false,
-         opciones: [
-        {
+         opciones: [{
           value: 'name',
           label: 'Nombre'
-        },
-         {
+        }, {
           value: 'slug',
           label: 'Url'
         }],

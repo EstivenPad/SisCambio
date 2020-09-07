@@ -48,7 +48,7 @@ export default new VueRouter({
             props: true
         },
 
-        /**************Rol*****************/
+        /************** Rol *****************/
         { path: '/rol', component: require('./components/modulos/rol/index').default },
         { path: '/rol/crear', component: require('./components/modulos/rol/crear').default },
         {
@@ -58,7 +58,7 @@ export default new VueRouter({
             props: true
         },
         
-        /**************Permiso*****************/
+        /************** Permiso *****************/
         { path: '/permiso', component: require('./components/modulos/permiso/index').default },
         { path: '/permiso/crear', component: require('./components/modulos/permiso/crear').default },
         {
@@ -66,7 +66,7 @@ export default new VueRouter({
             name: 'permiso.editar',
             component: require('./components/modulos/permiso/editar').default,
             props: true
-        }
+        },
     ],
     mode: 'history',
     linkActiveClass: 'active'

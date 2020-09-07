@@ -3,7 +3,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Rol</h1>
+            <h1 class="m-0 text-dark">Permisos</h1>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid-->
@@ -29,67 +29,38 @@
                   class="col-md-3"
                   placeholder="Criterio"
                   v-model="criterio"
-                  @keyup.enter="getListaUsuarios(filtro, criterio)"
+                  @keyup.enter="getListaPermisos(filtro, criterio)"
                   clearable>
                 </el-input>
                 <div class="col-md-2">
-                  <button class="btn btn-info" @click.prevent="getListaUsuarios(filtro, criterio)" v-loading.fullscreen.lock="fullscreenLoading">Buscar</button>
+                  <button class="btn btn-info" @click.prevent="getListaPermisos(filtro, criterio)" v-loading.fullscreen.lock="fullscreenLoading">Buscar</button>
                 </div>
               </div>
           </div>
           <div class="card-body table-responsive">
             <div class="container-fluid">
-              <template v-if="listarUsuariosPaginated.length">
+              <template v-if="listarPermisosPaginated.length">
                 <table class="table table-hover table-head-fixed text-nowrap projects table-striped">
                   <thead>
                     <tr>
-                      <th>Fotografia</th>
                       <th>Nombre</th>
-                      <th>Usuario</th>
-                      <th>Estado</th>
-                      <th>Acción</th>
+                      <th>Url Amigable</th>
+                      <th>Módulo</th>
+                      <th>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(item, index) in listarUsuariosPaginated" :key="index">
+                    <tr v-for="(item, index) in listarPermisosPaginated" :key="index">
+
+                      <td v-text="item.name"></td>
+                      <td v-text="item.slug"></td>
+                      <td v-text="item.modulo"></td>
+
                       <td>
-                        <template v-if="!item.imagen">
-                          <li class="user-block">
-                            <img src="/img/user.png" :alt="'Imagen'" class="profile-avatar-img img-fluid img-circle">
-                          </li>
-                        </template>
-                        <template v-else>
-                          <li class="user-block">
-                            <img :src="'storage/' + item.imagen" :alt="'Imagen'" class="profile-avatar-img img-fluid img-circle">
-                          </li>
-                        </template>
-                      </td>
-                      <td v-text="item.nombre + ' ' + item.apellido"></td>
-                      <td v-text="item.usuario"></td>
-                      <td>
-                        <template v-if="item.estado == 1">
-                          <span class="badge badge-success" v-text="'ACTIVO'"></span>
-                        </template>
-                        <template v-else>
-                          <span class="badge badge-danger" v-text="'INACTIVO'"></span>
-                        </template>
-                      </td>
-                      <td>
-                        <template v-if="item.estado == 1">
-                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'usuario.editar', params: { id: item.id }}">
+                        <template>
+                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'permiso.editar', params: { id: item.id }}">
                             <i class="fas fa-pencil-alt"></i> Editar
                           </router-link>
-                          <router-link class="btn btn-flat btn-secondary btn-sm" :to="'/'">
-                            <i class="fas fa-key"></i> Permiso
-                          </router-link>
-                          <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoUsuario(1, item.id, filtro, criterio)">
-                            <i class="fas fa-trash"></i> Desactivar
-                          </button>
-                        </template>
-                        <template v-else>
-                          <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoUsuario(2, item.id, filtro, criterio)">
-                            <i class="fas fa-check"></i> Activar
-                          </button>
                         </template>
                       </td>
                     </tr>
@@ -112,8 +83,8 @@
             </div>
           </div>
 
-        <div id="container-floating" v-tooltip.left="'Crear nuevo usuario'">
-            <router-link :to="'/usuario/crear'">
+        <div id="container-floating" v-tooltip.left="'Crear nuevo rol'">
+            <router-link :to="'/rol/crear'">
                 <div id="floating-button">
                     <p class="plus">+</p>
                     <div class="plusH">
@@ -131,48 +102,39 @@
   export default {
     data(){
       return {
-        listUsuario: [],
-        opciones: [{
-          value: 'nombre',
-          label: 'Nombre'
-        }, {
-          value: 'apellido',
-          label: 'Apellido'
-        }, {
-          value: 'usuario',
-          label: 'Usuario'
-        }, {
-          value: 'A',
-          label: 'Activo'
-        }, {
-          value: 'I',
-          label: 'Inactivo'
-        },],
+        listPermiso: [],
         filtro: '',
         criterio: '',
         pageNumber: 0,
-        perPage: 15,
-        fullscreenLoading: false
+        perPage: 10,
+        fullscreenLoading: false,
+         opciones: [{
+          value: 'name',
+          label: 'Nombre'
+        }, {
+          value: 'slug',
+          label: 'Url'
+        }],
       }
     },
     mounted(){
-      this.getListaUsuarios('', '', 0);
+      this.getListaPermisos('', '');
     },
     computed: {
       //Obtener el numero de pagina
       pageCount(){
-        let a = this.listUsuario.length,
+        let a = this.listPermiso.length,
             b = this.perPage;
         return Math.ceil(a / b);
       },
       //Obtener registros paginados
-      listarUsuariosPaginated(){
+      listarPermisosPaginated(){
         let inicio = this.pageNumber * this.perPage,
             fin = inicio + this.perPage;
-        return this.listUsuario.slice(inicio, fin);
+        return this.listPermiso.slice(inicio, fin);
       },
       pagesList(){
-        let a = this.listUsuario.length,
+        let a = this.listPermiso.length,
             b = this.perPage;
         let pageCount = Math.ceil(a / b);
         let count = 0,
@@ -190,17 +152,15 @@
       }
     },
     methods: {
-      limpiarBandejaUsuarios(){
-        this.listUsuario = [];
-      },
-      getListaUsuarios(filtro, criterio, filtroaplicado){
+
+      getListaPermisos(filtro, criterio){
         this.fullscreenLoading = true;
 
-        var url = '/usuario/getListaUsuarios?filtro=' + filtro +'&criterio=' + criterio + '&filtroaplicado=' + filtroaplicado;
+        var url = '/permiso/getListaPermisos?filtro=' + filtro +'&criterio=' + criterio ;
         axios.get(url).then(response => {
           this.inicializarPaginacion();
           console.log(response);
-          this.listUsuario = response.data;
+          this.listPermiso = response.data;
           this.fullscreenLoading = false;
         })
       },
@@ -216,35 +176,7 @@
       inicializarPaginacion(){
         this.pageNumber = 0;
       },
-      setCambiarEstadoUsuario(opc, id, filtro, criterio){
-        Swal.fire({
-          title: '¿Está seguro de ' + ((opc == 1) ? 'desactivar' : 'activar') + ' el usuario?',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: ((opc == 1) ? 'Sí, desactivar' : 'Sí, activar')
-        }).then((result) => {
-          if (result.value) {
-            //Aqui ira la confirmacion del boton, es decir, la peticion al servidor
-            this.fullscreenLoading = true;
 
-            var url = '/usuario/setCambiarEstadoUsuario'
-            axios.put(url, {
-              'id': id
-            }).then(response => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Se ' + ((opc == 1) ? 'desactivó' : 'activó') + ' el usuario',
-                showConfirmButton: false,
-                timer: 1500
-              })
-
-              this.getListaUsuarios(filtro, criterio, 0);
-            })
-          }
-        })
-      }
     }
   }
 </script>
