@@ -73,7 +73,6 @@
                         <div :id="modulo.modulo" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                           <div class="card-body">
                             <div v-for="(permiso, index2) in listaCheck" :key="index2">
-                              <!-- <el-checkbox v-model="listaCheck[index2]" :value="permiso.id" v-if="permiso.modulo == modulo.modulo" > -->
                               <el-checkbox v-model="permiso.checked" v-if="permiso.modulo == modulo.modulo" >
                                 <p v-if="permiso.modulo == modulo.modulo" v-text="permiso.name"></p>
                               </el-checkbox>
@@ -121,7 +120,6 @@ export default {
       listaCheck: [],
       Permisos: [],
       Modulos: [],
-      form: new FormData,
       fullscreenLoading: false,
       modalShow: false,
       mostrarModal: {
@@ -143,8 +141,8 @@ export default {
       this.modalShow = !this.modalShow;
     },
     limpiarCampos(){
-      this.Permiso.Nombre = '';
-      this.Permiso.Slug = '';
+      this.Rol.Nombre = '';
+      this.Rol.Slug = '';
     },
     setRegistrarRol(){
       if(this.validarCampos()){

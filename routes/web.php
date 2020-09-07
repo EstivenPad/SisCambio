@@ -14,8 +14,8 @@ Route::put('/usuario/setCambiarEstadoUsuario', 'UsuarioController@setCambiarEsta
 
 Route::get('/rol/getListaRoles', 'RolController@getListaRoles');
 Route::post('/rol/setRegistrarRol', 'RolController@setRegistrarRol');
-Route::get('/rol/getRolEditar', 'RolController@getRolEditar');
-Route::post('rol/setEditarRol', 'RolController@setEditarRol');
+Route::get('/rol/getRolPermisoEditar', 'RolController@getRolPermisoEditar');
+Route::post('rol/setEditarRolPermiso', 'RolController@setEditarRolPermiso');
 Route::get('/rol/getPermisosByRol', 'RolController@getPermisosByRol');
 
 /*************** Permisos ******************/

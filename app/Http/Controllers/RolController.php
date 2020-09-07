@@ -10,7 +10,7 @@ use DB;
 
 class RolController extends Controller
 {
-    public function getListaRol(Request $request){
+    public function getListaRoles(Request $request){
         $filtro = $request->filtro;
         $criterio = $request->criterio;
         $filtroaplicado = $request->filtroaplicado;
@@ -18,7 +18,7 @@ class RolController extends Controller
         if($criterio == ''){
             $roles = Rol::orderBy('id','desc')->get();
         }
-        if($criterio != '' &&   $filtro != ''){
+        if($criterio != '' && $filtro != ''){
             $roles = Rol::where($filtro,'like','%'.$criterio.'%')->orderBy('id','desc')->get();
         }
 
@@ -42,13 +42,10 @@ class RolController extends Controller
             $tamano = sizeof($permisos);
 
             if($tamano > 0){
-
-                $id_rol = DB::table('roles')->select('id')->where('id', DB::raw("(select max(`id`) from roles)"))->get();
-
                 foreach($permisos as $key => $item){
                     if($item['checked'] == true){
                         $detalle = new Rol_Permiso();
-                        $detalle->role_id = $id_rol[0]->id;
+                        $detalle->role_id = $rol->id;
                         $detalle->permission_id = $item['id'];  
                         $detalle->save();                      
                     }
@@ -61,7 +58,7 @@ class RolController extends Controller
         }
     }
 
-    public function getRolEditar(Request $request)
+    public function getRolPermisoEditar(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
 
@@ -70,16 +67,41 @@ class RolController extends Controller
         return $rol;
     }
 
-    public function setEditarRol(Request $request)
+    public function setEditarRolPermiso(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
 
         $rol = Rol::findOrFail($request->id);
         $rol->slug = $request->slug;
         $rol->name = $request->nombre;
-        $rol->modulo = $request->modulo;
         $rol->updated_at = now();
         $rol->save();
+
+        try {
+            DB::beginTransaction();
+
+            $permisos = $request->permisos;
+            $tamano = sizeof($permisos);
+            
+            if($tamano > 0){
+                foreach($permisos as $key => $item){
+                    Rol_Permiso::where('role_id','=',$request->id)->delete();
+                }
+                foreach($permisos as $key => $item){                     
+                    if($item['checked'] == true){
+                     
+                        $detalle = new Rol_Permiso();
+                        $detalle->role_id = $rol->id;
+                        $detalle->permission_id = $item['id'];  
+                        $detalle->save();                      
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
     }
 
     public function getPermisosByRol(Request $request)
@@ -88,7 +110,8 @@ class RolController extends Controller
 
         $modulos = DB::table('permissions')->select('modulo',DB::raw("COUNT(id) as total"))->groupBy('modulo')->get();
         $permisos = Permisos::orderBy('id', 'desc')->get();
+        $permisosChecked = Rol_Permiso::where('role_id', '=', $request->id)->get();
 
-        return ['modulos' => $modulos, 'permisos' => $permisos];
+        return ['modulos' => $modulos, 'permisos' => $permisos, 'permisosChecked' => $permisosChecked];
     }
 }
