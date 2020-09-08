@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+/*************** Login ******************/
+Route::post('/autenticacion/login', 'Auth\LoginController@login');
+
 /*************** Usuario ******************/
 
 Route::get('/usuario/getListaUsuarios', 'UsuarioController@getListaUsuarios');
@@ -52,3 +55,7 @@ Route::put('/almacen/setCambiarEstadoAlmacen', 'AlmacenController@setCambiarEsta
 Route::get('/{optional?}', function () {
     return view('app');
 })->name('basepath')->where('optional', '.*');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

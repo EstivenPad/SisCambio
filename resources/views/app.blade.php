@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
-<head>
-  @include('sections.head')
-</head>
+
+@include('sections.head')
 
 <body class="hold-transition sidebar-mini">
-  
   <div class="wrapper" id="app">
-    <App ruta="{{ route('basepath') }}"></App>
+
+    @if(Auth::check())
+      <App ruta="{{ route('basepath') }}"></App>
+    @else
+      <Auth ruta="{{ route('basepath') }}"></Auth>
+    @endif
+
   </div>
-  <!-- ./wrapper -->
 
   @include('sections.script')
+  
 </body>
 </html>

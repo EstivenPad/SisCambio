@@ -5,6 +5,14 @@ Vue.use(VueRouter)
 
 export default new VueRouter({
     routes: [
+        /************** Login *****************/
+        { 
+            path: '/login', 
+            name: 'login',
+            component: require('./components/modulos/autenticacion/login').default,
+            props: true
+        },
+
         /************** Inicio *****************/
         { path: '/', component: require('./components/modulos/index').default },
 
