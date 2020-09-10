@@ -152,7 +152,6 @@
       }
     },
     methods: {
-
       getListaPermisos(filtro, criterio){
         this.fullscreenLoading = true;
 

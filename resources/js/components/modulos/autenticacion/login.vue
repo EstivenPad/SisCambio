@@ -8,11 +8,11 @@
     <!-- /.login-logo -->
     <div class="card">
       <div class="card-body login-card-body">
-        <p class="login-box-msg">Ingresa tus datos para iniciar sesión</p>
+        <p class="login-box-msg">Ingrese sus datos para iniciar sesión</p>
 
         <form method="post">
           <div class="input-group mb-3">
-            <input type="text" v-model="Login.Usuario" class="form-control" placeholder="Usuario">
+            <input type="text" v-model="Login.Usuario" @keyup.enter="login" class="form-control" placeholder="Usuario">
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-user"></span>
@@ -20,7 +20,7 @@
             </div>
           </div>
           <div class="input-group mb-3">
-            <input type="password" v-model="Login.Contrasena" class="form-control" placeholder="Contraseña">
+            <input type="password" v-model="Login.Contrasena" @keyup.enter="login" class="form-control" placeholder="Contraseña">
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-lock"></span>
@@ -73,7 +73,43 @@ export default {
         "contrasena" : this.Login.Contrasena
       }).then(response => {
         console.log(response.data);
+
+        if(response.data.code == 401){
+          this.loginFail();
+        }
+        if(response.data.code == 200){
+          this.loginSuccess();
+        }
         this.fullscreenLoading = false;
+      });
+    },
+    loginSuccess(){
+      this.$router.push({name: 'index'});
+      location.reload();
+    },
+    loginFail(){
+      this.error = 0;
+      this.mensajeError = [];
+
+      this.mensajeError.push("Estas credenciales no coinciden con nuestros registros")
+
+      this.Login.Contrasena = '';
+
+      if(this.mensajeError.length){
+        this.error = 1;
+      }
+
+      return this.error;
+    },
+    getListarRolPermisoByUsuario(){
+      var url = '/usuario/getListarRolPermisoByUsuario';
+
+      axios.get(url, {
+        params: {
+          'id' : this.Login.Usuario
+        }
+      }).then(response => {
+
       });
     },
     validarCampos(){

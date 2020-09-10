@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 /*************** Login ******************/
 Route::post('/autenticacion/login', 'Auth\LoginController@login');
+Route::post('/autenticacion/logout', 'Auth\LoginController@logout');
 
 /*************** Usuario ******************/
 

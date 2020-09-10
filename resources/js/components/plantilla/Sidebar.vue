@@ -11,94 +11,104 @@
 
         <!-- Sidebar -->
         <div class="sidebar">
-        <!-- Sidebar user (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-            <img :src="ruta + '/img/avatar5.png'" class="img-circle elevation-2" alt="Juan Ramón Gómez">
+            <!-- Sidebar user (optional) -->
+            <div class="user-panel mt-3 pb-3 mb-1 d-flex">
+                <div class="image">
+                    <img :src="ruta + '/img/user.png'" class="img-circle elevation-2" alt="Juan Ramón Gómez">
+                </div>
+                <div class="info">
+                    <router-link :to="{name: 'usuario.editar', params: usuario.id}" >
+                        {{usuario.nombrecompleto}}
+                    </router-link>
+                </div>
             </div>
-            <div class="info">
-            <a href="#" class="d-block">Juan Ramón Gómez</a>
-            </div>
-        </div>
 
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'/'" >
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>
-                    Dashboard
-                </p>
-                </router-link>
-            </li>
-            <li class="nav-header">OPERACIONES</li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'/cliente'" >
-                <i class="nav-icon fas fa-user-friends"></i>
-                <p>
-                    Clientes
-                </p>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'/moneda'" >
-                <i class="nav-icon fas fa-coins"></i>
-                <p>
-                    Monedas
-                </p>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'/almacen'" >
-                <i class="nav-icon fas fa-warehouse"></i>
-                <p>
-                    Almacenes
-                </p>
-                </router-link>
-            </li>
-            <li class="nav-header">CONFIGURACIONES</li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
-                <i class="nav-icon fas fa-sitemap"></i>
-                <p>Categorias</p>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
-                <i class="nav-icon fas fa-apple-alt"></i>
-                <p>Productos</p>
-                </router-link>
-            </li>
-            <li class="nav-header">ADMINISTRACIÓN</li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'/usuario'" >
-                <i class="nav-icon fas fa-users"></i>
-                <p>Usuarios</p>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'/rol'" >
-                <i class="nav-icon fas fa-unlock-alt"></i>
-                <p>Roles</p>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'/permiso'" >
-                <i class="nav-icon fas fa-key"></i>
-                <p>Permisos</p>
-                </router-link>
-            </li>
-            <li class="nav-header">REPORTES</li>
-            <li class="nav-item">
-                <router-link class="nav-link" :to="'#'" >
-                <i class="nav-icon fas fa-file-export"></i>
-                <p>Pedidos</p>
-                </router-link>
-            </li>
-            </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
+            <div class="user-panel d-flex justify-content-center" @click.prevent="logout" v-loading.fullscreen.lock="fullscreenLoading">
+                <div class="info">
+                    <a href="#" class="d-block">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'/'" >
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        Dashboard
+                    </p>
+                    </router-link>
+                </li>
+                <li class="nav-header">OPERACIONES</li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'/cliente'" >
+                    <i class="nav-icon fas fa-user-friends"></i>
+                    <p>
+                        Clientes
+                    </p>
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'/moneda'" >
+                    <i class="nav-icon fas fa-coins"></i>
+                    <p>
+                        Monedas
+                    </p>
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'/almacen'" >
+                    <i class="nav-icon fas fa-warehouse"></i>
+                    <p>
+                        Almacenes
+                    </p>
+                    </router-link>
+                </li>
+                <li class="nav-header">CONFIGURACIONES</li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'#'" >
+                    <i class="nav-icon fas fa-sitemap"></i>
+                    <p>Categorias</p>
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'#'" >
+                    <i class="nav-icon fas fa-apple-alt"></i>
+                    <p>Productos</p>
+                    </router-link>
+                </li>
+                <li class="nav-header">ADMINISTRACIÓN</li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'/usuario'" >
+                    <i class="nav-icon fas fa-users"></i>
+                    <p>Usuarios</p>
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'/rol'" >
+                    <i class="nav-icon fas fa-unlock-alt"></i>
+                    <p>Roles</p>
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'/permiso'" >
+                    <i class="nav-icon fas fa-key"></i>
+                    <p>Permisos</p>
+                    </router-link>
+                </li>
+                <li class="nav-header">REPORTES</li>
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="'#'" >
+                    <i class="nav-icon fas fa-file-export"></i>
+                    <p>Pedidos</p>
+                    </router-link>
+                </li>
+                </ul>
+            </nav>
+            <!-- /.sidebar-menu -->
         </div>
         <!-- /.sidebar -->
     </aside>
@@ -106,7 +116,27 @@
 
 <script>
     export default {
-        props: ['ruta']
+        props: ['ruta', 'usuario'],
+        data(){
+            return{
+                fullscreenLoading: false
+            }
+        },
+        methods: {
+            logout(){
+                this.fullscreenLoading = true;
+                
+                var url = '/autenticacion/logout';
+
+                axios.post(url).then(response => {
+                    if(response.data.code == 204){
+                        this.$router.push({name: 'login'});
+                        location.reload();
+                        this.fullscreenLoading = false;
+                    }
+                });
+            }
+        }
     }
 </script>
 

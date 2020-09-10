@@ -175,7 +175,7 @@
         this.form.append("nombre", this.Usuario.Nombre);
         this.form.append("apellido", this.Usuario.Apellido);
         this.form.append("usuario", this.Usuario.Usuario);
-        this.form.append("pass", this.Usuario.Contrasena);
+        this.form.append("password", this.Usuario.Contrasena);
         this.form.append("imagen", this.Usuario.Imagen);
 
         const config = { headers: { 'Content-Type':'multipart/form-data' }};

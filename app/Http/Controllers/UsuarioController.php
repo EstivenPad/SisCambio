@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 use App\Usuario;
 
 class UsuarioController extends Controller
@@ -65,7 +66,7 @@ class UsuarioController extends Controller
         $usuario->nombre = $request->nombre;
         $usuario->apellido = $request->apellido;
         $usuario->usuario = $request->usuario;
-        $usuario->pass = Hash::make($request->pass);
+        $usuario->password =   Hash::make($request->password);
         $usuario->estado = 1;
         $usuario->creado_por = 1;
         $usuario->actualizado_por = 1;
@@ -78,7 +79,7 @@ class UsuarioController extends Controller
         if(!$request->ajax()) return redirect('/');
 
         $usuario = Usuario::findOrFail($request->id);
-   
+        
         return $usuario;
     }
 
@@ -87,10 +88,19 @@ class UsuarioController extends Controller
         if(!$request->ajax()) return redirect('/');
         
         $usuario = Usuario::findOrFail($request->id);
+
+        //Si se esta enviando una imagen, se almacena la ruta publica de esa imagen
+        if($request->imagen){
+            $path = Storage::putFile('public/usuario', $request->file('imagen'));
+            
+            //Recorto la cadena, quitando los primeros 7 caracteres, para que la ruta de la imagen aparezca sin el "public/"
+            $path = substr($path, 7);
+            $usuario->imagen = $path;
+        }
+
         $usuario->nombre = $request->nombre;
         $usuario->apellido = $request->apellido;
-        $usuario->usuario = $request->usuario;
-        $usuario->imagen = $request->imagen;        
+        $usuario->usuario = $request->usuario;     
         $usuario->creado_por = 1;
         $usuario->actualizado_por = 1;
         $usuario->updated_at = now();
