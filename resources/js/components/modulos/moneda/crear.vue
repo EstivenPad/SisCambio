@@ -139,6 +139,13 @@
           console.log('Se registró la moneda exitosamente');
           this.fullscreenLoading = false;
           this.$router.push('/moneda');//Redirecciona al index
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         });
       },
       validarCampos(){

@@ -16,10 +16,10 @@ class RolController extends Controller
         $filtroaplicado = $request->filtroaplicado;
 
         if($criterio == ''){
-            $roles = Rol::orderBy('id','desc')->get();
+            $roles = Rol::orderBy('id','asc')->get();
         }
         if($criterio != '' && $filtro != ''){
-            $roles = Rol::where($filtro,'like','%'.$criterio.'%')->orderBy('id','desc')->get();
+            $roles = Rol::where($filtro,'like','%'.$criterio.'%')->orderBy('id','asc')->get();
         }
 
         return $roles;

@@ -112,6 +112,9 @@
           value: 'Roles',
           label: 'Roles'
         }, {
+          value: 'Permisos',
+          label: 'Permisos'
+        }, {
           value: 'Clientes',
           label: 'Clientes'
         }, {
@@ -162,8 +165,14 @@
         var url = '/permiso/setRegistrarPermiso';
 
         axios.post(url, this.form, config).then(response => {
-
           this.$router.push('/permiso');
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       validarRegistrarPermiso(){

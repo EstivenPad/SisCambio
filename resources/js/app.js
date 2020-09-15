@@ -19,6 +19,10 @@ window.Vue.use(ElementUI);
 import Swal from 'sweetalert2';
 window.Swal = Swal;
 
+
+export const EventBus = new Vue();
+window.EventBus = EventBus;
+
 Vue.component('App', require('./components/App.vue').default);
 
 Vue.component('Auth', require('./components/Auth.vue').default);

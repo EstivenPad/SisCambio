@@ -117,6 +117,13 @@
           this.Almacen.Nombre = response.data.nombre;
           this.Almacen.Descripcion = response.data.descripcion;
           this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       abrirModal(){
@@ -154,6 +161,13 @@
           });
 
           this.$router.push('/almacen');//Redirecciona al index
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         });
       },
       validarCampos(){

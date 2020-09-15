@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 use App\Usuario;
+use App\Usuario_Rol;
+use DB;
 
 class UsuarioController extends Controller
 {
@@ -66,12 +68,16 @@ class UsuarioController extends Controller
         $usuario->nombre = $request->nombre;
         $usuario->apellido = $request->apellido;
         $usuario->usuario = $request->usuario;
-        $usuario->password =   Hash::make($request->password);
+        $usuario->password = Hash::make($request->password);
         $usuario->estado = 1;
         $usuario->creado_por = 1;
         $usuario->actualizado_por = 1;
         $usuario->created_at = now();
         $usuario->save();
+
+        $usuario_guardado = DB::table('users')->select(DB::raw('MAX(id) as id'))->get();
+        
+        return $usuario_guardado[0]->id;
     }
 
     public function getUsuarioEditar(Request $request)
@@ -88,7 +94,7 @@ class UsuarioController extends Controller
         if(!$request->ajax()) return redirect('/');
         
         $usuario = Usuario::findOrFail($request->id);
-
+        
         //Si se esta enviando una imagen, se almacena la ruta publica de esa imagen
         if($request->imagen){
             $path = Storage::putFile('public/usuario', $request->file('imagen'));
@@ -105,5 +111,52 @@ class UsuarioController extends Controller
         $usuario->actualizado_por = 1;
         $usuario->updated_at = now();
         $usuario->save();
+    }
+
+    public function setGuardarRolUsuario(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $respuesta = Usuario_Rol::where('user_id','=',$request->user_id);
+
+        if($respuesta){
+            Usuario_Rol::where('user_id','=',$request->id)->delete();
+        }
+        
+        $usuario_rol = new Usuario_Rol();
+        
+        $usuario_rol->user_id = $request->user_id;
+        $usuario_rol->role_id = $request->rol_id;
+        $usuario_rol->save();
+    }
+
+    public function getRolByUsuario(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+        
+        $rol = Usuario_Rol::where('user_id', '=', $request->id)->get();
+        
+        return $rol;
+    }
+
+    public function getListarPermisosByRol(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+        
+        $id = $request->id;
+
+        if(!$id){
+            $id = Auth::id();
+        }   
+
+        $respuesta = DB::table('users_roles')
+                    ->join('roles', 'roles.id', '=', 'users_roles.role_id')
+                    ->join('roles_permissions', 'roles.id', '=', 'roles_permissions.role_id')
+                    ->join('permissions', 'roles_permissions.permission_id', '=', 'permissions.id')
+                    ->select('permissions.name', 'permissions.slug', 'permissions.modulo')
+                    ->where('users_roles.user_id', '=', $id)
+                    ->get();
+
+        return $respuesta;
     }
 }

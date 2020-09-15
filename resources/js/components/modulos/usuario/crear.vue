@@ -60,6 +60,23 @@
                     </div>
                     <div class="col-md-6">
                       <div class="form-group row">
+                        <label class="col-md-3 col-form-label">Rol</label>
+                        <div class="col-md-9">
+                          <template>
+                            <el-select v-model="Usuario.Rol" placeholder="Seleccione un rol">
+                              <el-option
+                                v-for="item in listaRoles"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group row">
                         <label class="col-md-3 col-form-label">Fotografía</label>
                         <div class="col-md-9">
                           <input type="file" @change="getFile">
@@ -111,9 +128,10 @@
           Apellido: '',
           Usuario: '',
           Contrasena: '',
+          Rol: '',
           Imagen: ''
         },
-        listUsuario: [],
+        listaRoles: [],
         form: new FormData,
         fullscreenLoading: false,
         modalShow: false,
@@ -128,6 +146,9 @@
         mensajeError: [],
       }
     },
+    mounted(){
+      this.getListaRoles();
+    },
     methods: {
       abrirModal(){
         this.modalShow = !this.modalShow;
@@ -137,7 +158,22 @@
         this.Usuario.Apellido = '';
         this.Usuario.Usuario = '';
         this.Usuario.Contrasena = '';
+        this.Usuario.Rol = '';
         this.Usuario.Imagen = '';
+      }, 
+      getListaRoles(){
+        var url = '/rol/getListaRoles';
+
+        axios.get(url).then(response => {
+          this.listaRoles = response.data;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
       },
       getFile(e){
         this.Usuario.Imagen = e.target.files[0];
@@ -162,9 +198,32 @@
         var url = '/usuario/setRegistrarUsuario';
 
         axios.post(url, this.form, config).then(response => {
-          console.log('Se registró el usuario exitosamente');
+          this.setGuardarRolUsuario(response.data);
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
+      },
+      setGuardarRolUsuario(id){
+        var url = '/usuario/setGuardarRolUsuario';
+    	  
+        axios.post(url, {
+          'user_id' : id,
+          'rol_id'  : this.Usuario.Rol
+        }).then(response => {
           this.fullscreenLoading = false;
           this.$router.push('/usuario');
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       validarRegistrarUsuario(){
@@ -179,6 +238,9 @@
         }
         if(!this.Usuario.Contrasena){
           this.mensajeError.push("La Contraseña es un campo obligatorio")
+        }
+        if(!this.Usuario.Rol){
+          this.mensajeError.push("Debe seleccionar un rol para el usuario")
         }
 
         if(this.mensajeError.length){

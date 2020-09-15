@@ -186,6 +186,13 @@
           console.log('Se registró el cliente exitosamente');
           this.fullscreenLoading = false;
           this.$router.push('/cliente');//Redirecciona al index
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         });
       },
       validarCampos(){

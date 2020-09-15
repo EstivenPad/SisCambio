@@ -30,7 +30,7 @@
                       <div class="form-group row">
                         <label class="col-md-3 col-form-label">Nombre</label>
                         <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Usuario.Nombre" @keyup.enter="setRegistrarUsuario()">
+                          <input type="text" class="form-control" v-model="Usuario.Nombre" @keyup.enter="setEditarUsuario()">
                         </div>
                       </div>
                     </div>
@@ -38,7 +38,7 @@
                       <div class="form-group row">
                         <label class="col-md-3 col-form-label">Apellido</label>
                         <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Usuario.Apellido" @keyup.enter="setRegistrarUsuario()">
+                          <input type="text" class="form-control" v-model="Usuario.Apellido" @keyup.enter="setEditarUsuario()">
                         </div>
                       </div>
                     </div>
@@ -46,7 +46,7 @@
                       <div class="form-group row">
                         <label class="col-md-3 col-form-label">Usuario</label>
                         <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Usuario.Usuario" @keyup.enter="setRegistrarUsuario()">
+                          <input type="text" class="form-control" v-model="Usuario.Usuario" @keyup.enter="setEditarUsuario()">
                         </div>
                       </div>
                     </div>
@@ -54,7 +54,24 @@
                       <div class="form-group row">
                         <label class="col-md-3 col-form-label">Contraseña</label>
                         <div class="col-md-9">
-                          <input type="text" class="form-control" v-model="Usuario.Contrasena" @keyup.enter="setRegistrarUsuario()">
+                          <input type="text" class="form-control" v-model="Usuario.Contrasena" @keyup.enter="setEditarUsuario()">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-md-3 col-form-label">Rol</label>
+                        <div class="col-md-9">
+                          <template>
+                            <el-select v-model="Usuario.Rol" placeholder="Seleccione un rol">
+                              <el-option
+                                v-for="item in listaRoles"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
+                          </template>
                         </div>
                       </div>
                     </div>
@@ -112,8 +129,10 @@
           Apellido: '',
           Usuario: '',
           Contrasena: '',
+          Rol: '',
           Imagen: ''
         },
+        listaRoles: [],
         form: new FormData,
         fullscreenLoading: false,
         modalShow: false,
@@ -130,8 +149,20 @@
     },
     mounted() {   
       this.getUsuarioById();
+      this.getListaRoles();
     },
     methods: {
+      abrirModal(){
+        this.modalShow = !this.modalShow;
+      },
+      limpiarCampos(){
+        this.Usuario.Nombre = '';
+        this.Usuario.Apellido = '';
+        this.Usuario.Usuario = '';
+        this.Usuario.Contrasena = '';
+        this.Usuario.Rol = '';
+        this.Usuario.Imagen = '';
+      },
       getUsuarioById(){
         this.fullscreenLoading = true;
 
@@ -144,19 +175,66 @@
           this.Usuario.Nombre = response.data.nombre;
           this.Usuario.Apellido = response.data.apellido;
           this.Usuario.Usuario = response.data.usuario;
-          this.Usuario.Imagen = response.data.imagen;
-          this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
-      abrirModal(){
-        this.modalShow = !this.modalShow;
+      getListaRoles(){
+        var url = '/rol/getListaRoles';
+
+        axios.get(url).then(response => {
+          this.listaRoles = response.data;
+          this.getRolByUsuario();
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
       },
-      limpiarCampos(){
-        this.Usuario.Nombre = '';
-        this.Usuario.Apellido = '';
-        this.Usuario.Usuario = '';
-        this.Usuario.Contrasena = '';
-        this.Usuario.Imagen = '';
+      getRolByUsuario(){
+        var url = '/usuario/getRolByUsuario';
+
+        axios.get(url, {
+          params: {
+            'id' : this.Usuario.Id
+          }
+        }).then(response => {
+          this.Usuario.Rol = (response.data.length == 0) ? '' : response.data[0].role_id;
+          this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
+      },
+      getRefrescarUsuarioEditado(){
+        var url = '/autenticacion/getRefrescarUsuarioEditado';
+
+        axios.get(url).then(response => {
+          EventBus.$emit('verificarUsuarioAutenticado', response.data);
+
+          this.fullscreenLoading = false;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Se actualizó el usuario correctamente',
+            showConfirmButton: false,
+            timer: 1530
+          });
+
+          this.$router.push('/usuario');//Redirecciona al index
+        });
       },
       getFile(e){
         this.Usuario.Imagen = e.target.files[0];
@@ -175,24 +253,38 @@
         this.form.append("nombre", this.Usuario.Nombre);
         this.form.append("apellido", this.Usuario.Apellido);
         this.form.append("usuario", this.Usuario.Usuario);
-        this.form.append("password", this.Usuario.Contrasena);
         this.form.append("imagen", this.Usuario.Imagen);
 
         const config = { headers: { 'Content-Type':'multipart/form-data' }};
         var url = '/usuario/setEditarUsuario';
 
         axios.post(url, this.form, config).then(response => {
-          this.fullscreenLoading = false;
-
-          Swal.fire({
-            icon: 'success',
-            title: 'Se actualizó el usuario correctamente',
-            showConfirmButton: false,
-            timer: 1530
-          });
-
-          this.$router.push('/usuario');//Redirecciona al index
+          this.setEditarRolUsuario();
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         });
+      },
+      setEditarRolUsuario(){
+        var url = '/usuario/setGuardarRolUsuario';
+    	  
+        axios.post(url, {
+          'user_id' : this.Usuario.Id,
+          'rol_id'  : this.Usuario.Rol
+        }).then(response => {
+          this.getRefrescarUsuarioEditado();
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
       },
       validarRegistrarUsuario(){
         this.error = 0;
@@ -203,6 +295,9 @@
         }
         if(!this.Usuario.Usuario){
           this.mensajeError.push("El Usuario es un campo obligatorio")
+        }
+        if(!this.Usuario.Rol){
+          this.mensajeError.push("Debe seleccionar un rol para el usuario")
         }
 
         if(this.mensajeError.length){

@@ -10,11 +10,13 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
+        if(!$request->ajax()) return redirect('/');
+
         $usuario = $request->usuario;
         $contrasena = $request->contrasena;
-
+        
         $respuesta = Auth::attempt(['usuario' => $usuario, 'password' => $contrasena, 'estado' => 1]);
-
+        
         if($respuesta){
             return response()->json([
                 'authUser' => Auth::user(),
@@ -29,6 +31,8 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        if(!$request->ajax()) return redirect('/');
+        
         Auth::logout();
 
         return response()->json([

@@ -5,7 +5,7 @@
     <!-- /.navbar -->
 
     <!-- Main Sidebar Container -->
-    <Sidebar :ruta="ruta" :usuario="usuario"></Sidebar>
+    <Sidebar :ruta="ruta" :usuario="authUser" :listaPermisos="listaPermisosByRol"></Sidebar>
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
@@ -32,7 +32,24 @@
 
   export default {
     props: ['ruta', 'usuario'],
-    components: {Navbar, Sidebar, Footer}
+    components: {Navbar, Sidebar, Footer},
+    data(){
+      return{
+        authUser: this.usuario,
+        listaPermisosByRol: []
+      }
+    },
+    mounted(){
+      this.listaPermisosByRol = JSON.parse(sessionStorage.getItem('listaPermisosByRol'));
+      
+      EventBus.$on('verificarUsuarioAutenticado', data => {
+        this.authUser = data;
+      });
+
+      EventBus.$on('notificarPermisosByRol', data => {
+        this.listaPermisosByRol = data;
+      });
+    }
   }
 </script>
 

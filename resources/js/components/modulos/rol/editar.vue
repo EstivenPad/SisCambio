@@ -122,6 +122,8 @@ export default {
       Permisos: [],
       Modulos: [],
       PermisosChecked: [],
+      listaPermisosByRol: [],
+      listaSlug: [],
       fullscreenLoading: false,
       modalShow: false,
       mostrarModal: {
@@ -146,9 +148,10 @@ export default {
     limpiarCampos(){
       this.Rol.Nombre = '';
       this.Rol.Slug = '';
-      // this.listaCheck.forEach((item, index) => {
-      //   console.log(item.checked = false;
-      // });
+
+      this.listaCheck.forEach((item, index) => {
+        item.checked = false;
+      });
     },
     setEditarRol(){
       if(this.validarCampos()){
@@ -168,16 +171,14 @@ export default {
         'slug' : this.Rol.Slug,
         'permisos' : this.listaCheck
       }).then(response => {
-        this.fullscreenLoading = false;
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Se actualizó el rol correctamente',
-          showConfirmButton: false,
-          timer: 1530
-        });
-
-        this.$router.push('/rol');
+        this.getListarPermisosByRol();
+      }).catch(error => {
+        if(error.response.status == 401){
+          this.$router.push({name: 'login'});
+          location.reload();
+          sessionStorage.clear();
+          this.fullscreenLoading = false;
+        }
       })
     },
     getRolPorId(){
@@ -191,6 +192,13 @@ export default {
         this.Rol.Slug = response.data.slug;
         
         this.fullscreenLoading = false;
+      }).catch(error => {
+        if(error.response.status == 401){
+          this.$router.push({name: 'login'});
+          location.reload();
+          sessionStorage.clear();
+          this.fullscreenLoading = false;
+        }
       })
     },
     getPermisosByRol(){
@@ -205,6 +213,13 @@ export default {
         this.Modulos = response.data.modulos;
         this.PermisosChecked = response.data.permisosChecked;
         this.setListaPermisoCheck();
+      }).catch(error => {
+        if(error.response.status == 401){
+          this.$router.push({name: 'login'});
+          location.reload();
+          sessionStorage.clear();
+          this.fullscreenLoading = false;
+        }
       })
     },
     setListaPermisoCheck(){
@@ -229,6 +244,41 @@ export default {
 
         });
       });
+    },
+    getListarPermisosByRol(){
+      var url = '/usuario/getListarPermisosByRol';
+
+      axios.get(url).then(response => {
+        this.listaPermisosByRol = response.data;
+        this.filtrarListaPermisosByRol();
+      }).catch(error => {
+        if(error.response.status == 401){
+          this.$router.push({name: 'login'});
+          location.reload();
+          sessionStorage.clear();
+          this.fullscreenLoading = false;
+        }
+      })
+    },
+    filtrarListaPermisosByRol(){
+      this.listSlug = [];
+      
+      this.listaPermisosByRol.forEach((item, index) => {
+        this.listaSlug.push(item.slug);
+      })
+
+      sessionStorage.setItem('listaPermisosByRol', JSON.stringify(this.listaSlug));
+      EventBus.$emit('notificarPermisosByRol', this.listaSlug);
+      this.fullscreenLoading = false;
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Se actualizó el rol correctamente',
+        showConfirmButton: false,
+        timer: 1530
+      });
+
+      this.$router.push('/rol');
     },
     validarCampos(){
       this.error = 0;

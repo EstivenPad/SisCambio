@@ -49,17 +49,24 @@
                       </td>
                       <td>
                         <template v-if="item.estado == 1">
-                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'almacen.editar', params: { id: item.id }}">
-                            <i class="fas fa-pencil-alt"></i> Editar
-                          </router-link>
-                          <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoAlmacen(1, item.id, criterio)">
-                            <i class="fas fa-trash"></i> Desactivar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('almacen.editar')">
+                            <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'almacen.editar', params: { id: item.id }}">
+                              <i class="fas fa-pencil-alt"></i> Editar
+                            </router-link>
+                          </template>
+
+                          <template v-if="listaPermisosByRol.includes('almacen.desactivar')">
+                            <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoAlmacen(1, item.id, criterio)">
+                              <i class="fas fa-trash"></i> Desactivar
+                            </button>
+                          </template>
                         </template> 
                         <template v-else>
-                          <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoAlmacen(2, item.id, criterio)">
-                            <i class="fas fa-check"></i> Activar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('almacen.activar')">
+                            <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoAlmacen(2, item.id, criterio)">
+                              <i class="fas fa-check"></i> Activar
+                            </button>
+                          </template>
                         </template>                           
                         
                       </td>
@@ -85,16 +92,18 @@
             </div>
           </div>
           
-        <div id="container-floating" v-tooltip.left="'Crear nuevo almacen'">
-            <router-link :to="'/almacen/crear'">
+          <template v-if="listaPermisosByRol.includes('almacen.crear')">
+            <div id="container-floating" v-tooltip.left="'Crear nuevo almacen'">
+              <router-link :to="{ name: 'almacen.crear' }">
                 <div id="floating-button">
-                    <p class="plus">+</p>
-                    <div class="plusH">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
+                  <p class="plus">+</p>
+                  <div class="plusH">
+                    <i class="fas fa-user-plus"></i>
+                  </div>
                 </div>
-            </router-link>
-        </div>
+              </router-link>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -105,6 +114,7 @@
     data(){
       return {
         listaAlmacenes: [],
+        listaPermisosByRol: JSON.parse(sessionStorage.getItem('listaPermisosByRol')),
         criterio: '',
         pageNumber: 0, //Numero de la pagina actual, que siempre se inicializa en 0
         perPage: 15, //Cantidad de registros por pagina
@@ -152,12 +162,21 @@
       getListaAlmacen(criterio){
         this.fullscreenLoading = true;
         this.listaAlmacenes = [];
+        
         var url = '/almacen/getListaAlmacenes?criterio=' + criterio;
+
         axios.get(url).then(response => {
           this.inicializarPaginacion();
           console.log(response);
           this.listaAlmacenes = response.data;
           this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       paginaSiguiente(){
@@ -197,6 +216,13 @@
               })
 
               this.getListaAlmacen(criterio);
+            }).catch(error => {
+              if(error.response.status == 401){
+                this.$router.push({name: 'login'});
+                location.reload();
+                sessionStorage.clear();
+                this.fullscreenLoading = false;
+              }
             })
           }
         })

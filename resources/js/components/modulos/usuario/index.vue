@@ -76,20 +76,23 @@
                       </td>
                       <td>
                         <template v-if="item.estado == 1">
-                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'usuario.editar', params: { id: item.id }}">
-                            <i class="fas fa-pencil-alt"></i> Editar
-                          </router-link>
-                          <router-link class="btn btn-flat btn-secondary btn-sm" :to="'/'">
-                            <i class="fas fa-key"></i> Permiso
-                          </router-link>
-                          <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoUsuario(1, item.id, filtro, criterio)">
-                            <i class="fas fa-trash"></i> Desactivar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('usuario.editar')">
+                            <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'usuario.editar', params: { id: item.id }}">
+                              <i class="fas fa-pencil-alt"></i> Editar
+                            </router-link>
+                          </template>
+                          <template v-if="listaPermisosByRol.includes('usuario.desactivar')">
+                            <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoUsuario(1, item.id, filtro, criterio)">
+                              <i class="fas fa-trash"></i> Desactivar
+                            </button>
+                          </template>
                         </template> 
                         <template v-else>
-                          <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoUsuario(2, item.id, filtro, criterio)">
-                            <i class="fas fa-check"></i> Activar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('usuario.activar')">
+                            <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoUsuario(2, item.id, filtro, criterio)">
+                              <i class="fas fa-check"></i> Activar
+                            </button>
+                          </template>
                         </template>
                       </td>
                     </tr>
@@ -98,13 +101,13 @@
                 <div class="clearfix d-flex justify-content-start">
                   <ul class="pagination pagination-sm m-0 float-right">
                     <li class="page-item" v-if="pageNumber > 0">
-                      <a href="#" class="page-link" @click.prevent="prevPage">Ant</a>
+                      <a href="#" class="page-link" @click.prevent="prevPage">Anterior</a>
                     </li>
                     <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="[page == pageNumber ? 'active' : '']">
                       <a href="#" class="page-link" @click.prevent="selectPage(page)"> {{ page+1 }} </a>
                     </li>
                     <li class="page-item" v-if="pageNumber < pageCount - 1">
-                      <a href="#" class="page-link" @click.prevent="nextPage">Post</a>
+                      <a href="#" class="page-link" @click.prevent="nextPage">Siguiente</a>
                     </li>
                   </ul>
                 </div>
@@ -112,16 +115,18 @@
             </div>
           </div>
           
-        <div id="container-floating" v-tooltip.left="'Crear nuevo usuario'">
-            <router-link :to="'/usuario/crear'">
+          <template v-if="listaPermisosByRol.includes('usuario.crear')">
+            <div id="container-floating" v-tooltip.left="'Crear nuevo usuario'">
+              <router-link :to="{ name: 'usuario.crear' }">
                 <div id="floating-button">
                     <p class="plus">+</p>
                     <div class="plusH">
                         <i class="fas fa-user-plus"></i>
                     </div>
                 </div>
-            </router-link>
-        </div>
+              </router-link>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -132,6 +137,7 @@
     data(){
       return {
         listUsuario: [],
+        listaPermisosByRol: JSON.parse(sessionStorage.getItem('listaPermisosByRol')),
         opciones: [{
           value: 'nombre',
           label: 'Nombre'
@@ -197,11 +203,18 @@
         this.fullscreenLoading = true;
 
         var url = '/usuario/getListaUsuarios?filtro=' + filtro +'&criterio=' + criterio + '&filtroaplicado=' + filtroaplicado;
+        
         axios.get(url).then(response => {
           this.inicializarPaginacion();
-          console.log(response);
           this.listUsuario = response.data;
           this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       nextPage(){
@@ -241,6 +254,13 @@
               })
 
               this.getListaUsuarios(filtro, criterio, 0);
+            }).catch(error => {
+              if(error.response.status == 401){
+                this.$router.push({name: 'login'});
+                location.reload();
+                sessionStorage.clear();
+                this.fullscreenLoading = false;
+              }
             })
           }
         })

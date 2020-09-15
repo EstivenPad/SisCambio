@@ -55,6 +55,8 @@ export default {
         Usuario: '',
         Contrasena: ''
       },
+      listaPermisosByRol: [],
+      listaSlug: [],
       fullscreenLoading: false,
       error: 0,
       mensajeError: []
@@ -65,20 +67,18 @@ export default {
       if(this.validarCampos()){
         return;
       }
-
+      
       var url = "/autenticacion/login"
 
       axios.post(url, {
         "usuario" : this.Login.Usuario,
         "contrasena" : this.Login.Contrasena
       }).then(response => {
-        console.log(response.data);
-
         if(response.data.code == 401){
           this.loginFail();
         }
         if(response.data.code == 200){
-          this.loginSuccess();
+          this.getListarPermisosByRol(response.data.authUser);
         }
         this.fullscreenLoading = false;
       });
@@ -91,7 +91,7 @@ export default {
       this.error = 0;
       this.mensajeError = [];
 
-      this.mensajeError.push("Estas credenciales no coinciden con nuestros registros")
+      this.mensajeError.push("Estas credenciales no coinciden con nuestros registros o el usuario se encuentra desactivado")
 
       this.Login.Contrasena = '';
 
@@ -101,26 +101,37 @@ export default {
 
       return this.error;
     },
-    getListarRolPermisoByUsuario(){
-      var url = '/usuario/getListarRolPermisoByUsuario';
+    getListarPermisosByRol(authUser){
+      var url = '/usuario/getListarPermisosByRol';
 
       axios.get(url, {
         params: {
-          'id' : this.Login.Usuario
+          'id' : authUser.id
         }
       }).then(response => {
+        this.listaPermisosByRol = response.data;
+        this.filtrarListaPermisosByRol(authUser);
+      })
+    },
+    filtrarListaPermisosByRol(authUser){
+      this.listaPermisosByRol.forEach((item, index) => {
+        this.listaSlug.push(item.slug);
+      })
 
-      });
+      sessionStorage.setItem('listaPermisosByRol', JSON.stringify(this.listaSlug));
+      sessionStorage.setItem('authUser', JSON.stringify(authUser));
+
+      this.loginSuccess();
     },
     validarCampos(){
       this.error = 0;
       this.mensajeError = [];
 
       if(!this.Login.Usuario){
-        this.mensajeError.push("El Usuario es un campo obligatorio")
+        this.mensajeError.push("El Usuario no puede estar vacio")
       }
       if(!this.Login.Contrasena){
-        this.mensajeError.push("La Contraseña es un campo obligatorio")
+        this.mensajeError.push("La Contraseña no puede estar vacia")
       }
 
       if(this.mensajeError.length){

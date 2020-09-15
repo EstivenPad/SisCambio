@@ -50,12 +50,10 @@
                   </thead>
                   <tbody>
                     <tr v-for="(item, index) in listarRolesPaginados" :key="index">
-
                       <td v-text="item.name"></td>
                       <td v-text="item.slug"></td>
-
                       <td>
-                        <template>
+                        <template v-if="listaPermisosByRol.includes('rol.editar')">
                           <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'rol.editar', params: { id: item.id }}">
                             <i class="fas fa-pencil-alt"></i> Editar
                           </router-link>
@@ -81,16 +79,18 @@
             </div>
           </div>
 
-        <div id="container-floating" v-tooltip.left="'Crear nuevo rol'">
-            <router-link :to="'/rol/crear'">
+          <template v-if="listaPermisosByRol.includes('rol.crear')">
+            <div id="container-floating" v-tooltip.left="'Crear nuevo rol'">
+              <router-link :to="{ name: 'rol.crear' }">
                 <div id="floating-button">
-                    <p class="plus">+</p>
-                    <div class="plusH">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
+                  <p class="plus">+</p>
+                  <div class="plusH">
+                    <i class="fas fa-user-plus"></i>
+                  </div>
                 </div>
-            </router-link>
-        </div>
+              </router-link>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -101,6 +101,7 @@
     data(){
       return {
         listaRol: [],
+        listaPermisosByRol: JSON.parse(sessionStorage.getItem('listaPermisosByRol')),
         filtro: '',
         criterio: '',
         pageNumber: 0,
@@ -159,6 +160,13 @@
           console.log(response);
           this.listaRol = response.data;
           this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       nextPage(){

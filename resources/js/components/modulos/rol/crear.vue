@@ -163,6 +163,13 @@ export default {
       }).then(response => {
         this.fullscreenLoading = false;
         this.$router.push('/rol');
+      }).catch(error => {
+        if(error.response.status == 401){
+          this.$router.push({name: 'login'});
+          location.reload();
+          sessionStorage.clear();
+          this.fullscreenLoading = false;
+        }
       })
     },
     getPermisosByRol(){
@@ -173,6 +180,13 @@ export default {
         this.Modulos = response.data.modulos;
         
         this.setListaPermisoCheck();
+      }).catch(error => {
+        if(error.response.status == 401){
+          this.$router.push({name: 'login'});
+          location.reload();
+          sessionStorage.clear();
+          this.fullscreenLoading = false;
+        }
       })
     },
     setListaPermisoCheck(){

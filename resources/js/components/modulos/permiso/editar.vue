@@ -116,10 +116,15 @@
         }).then(response => {
           this.Permiso.Nombre = response.data.name;
           this.Permiso.Slug = response.data.slug;
-           this.fullscreenLoading = false;
-
+          this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
-
       },
       abrirModal(){
         this.modalShow = !this.modalShow;
@@ -146,8 +151,6 @@
         var url = '/permiso/setEditarPermiso';
 
         axios.post(url, this.form, config).then(response => {
-
-
           Swal.fire({
             icon: 'success',
             title: 'Se actualizó el Permiso correctamente',
@@ -156,6 +159,13 @@
           });
 
           this.$router.push('/permiso');//Redirecciona al index
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         });
       },
       validarRegistrarPermiso(){

@@ -80,20 +80,24 @@
                       </td>
                       <td>
                         <template v-if="item.estado == 1">
-                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'cliente.editar', params: { id: item.id }}">
-                            <i class="fas fa-pencil-alt"></i> Editar
-                          </router-link>
-                          <router-link class="btn btn-flat btn-secondary btn-sm" :to="'/'">
-                            <i class="fas fa-key"></i> Permiso
-                          </router-link>
-                          <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoCliente(1, item.id, filtro, criterio)">
-                            <i class="fas fa-trash"></i> Desactivar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('cliente.editar')">
+                            <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'cliente.editar', params: { id: item.id }}">
+                              <i class="fas fa-pencil-alt"></i> Editar
+                            </router-link>
+                          </template>
+
+                          <template v-if="listaPermisosByRol.includes('cliente.desactivar')">
+                            <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoCliente(1, item.id, filtro, criterio)">
+                              <i class="fas fa-trash"></i> Desactivar
+                            </button>
+                          </template>
                         </template> 
                         <template v-else>
-                          <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoCliente(2, item.id, filtro, criterio)">
-                            <i class="fas fa-check"></i> Activar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('cliente.activar')">
+                            <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoCliente(2, item.id, filtro, criterio)">
+                              <i class="fas fa-check"></i> Activar
+                            </button>
+                          </template>
                         </template>                           
                         
                       </td>
@@ -119,16 +123,18 @@
             </div>
           </div>
           
-        <div id="container-floating" v-tooltip.left="'Crear nuevo cliente'">
-            <router-link :to="'/cliente/crear'">
+          <template v-if="listaPermisosByRol.includes('cliente.crear')">
+            <div id="container-floating" v-tooltip.left="'Crear nuevo cliente'">
+              <router-link :to="{ name: 'cliente.crear' }">
                 <div id="floating-button">
-                    <p class="plus">+</p>
-                    <div class="plusH">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
+                  <p class="plus">+</p>
+                  <div class="plusH">
+                    <i class="fas fa-user-plus"></i>
+                  </div>
                 </div>
-            </router-link>
-        </div>
+              </router-link>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -139,6 +145,7 @@
     data(){
       return {
         listaClientes: [],
+        listaPermisosByRol: JSON.parse(sessionStorage.getItem('listaPermisosByRol')),
         opciones: [{
           value: 'nombre',
           label: 'Nombre'
@@ -206,6 +213,13 @@
           console.log(response);
           this.listaClientes = response.data;
           this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       paginaSiguiente(){
@@ -245,6 +259,13 @@
               })
 
               this.getListaCliente(filtro, criterio, 0);
+            }).catch(error => {
+              if(error.response.status == 401){
+                this.$router.push({name: 'login'});
+                location.reload();
+                sessionStorage.clear();
+                this.fullscreenLoading = false;
+              }
             })
           }
         })

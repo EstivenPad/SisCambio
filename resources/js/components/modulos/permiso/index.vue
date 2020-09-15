@@ -51,13 +51,11 @@
                   </thead>
                   <tbody>
                     <tr v-for="(item, index) in listarPermisosPaginated" :key="index">
-
                       <td v-text="item.name"></td>
                       <td v-text="item.slug"></td>
                       <td v-text="item.modulo"></td>
-
                       <td>
-                        <template>
+                        <template v-if="listaPermisosByRol.includes('permiso.editar')">
                           <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'permiso.editar', params: { id: item.id }}">
                             <i class="fas fa-pencil-alt"></i> Editar
                           </router-link>
@@ -69,13 +67,13 @@
                 <div class="clearfix d-flex justify-content-start">
                   <ul class="pagination pagination-sm m-0 float-right">
                     <li class="page-item" v-if="pageNumber > 0">
-                      <a href="#" class="page-link" @click.prevent="prevPage">Ant</a>
+                      <a href="#" class="page-link" @click.prevent="prevPage">Anterior</a>
                     </li>
                     <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="[page == pageNumber ? 'active' : '']">
                       <a href="#" class="page-link" @click.prevent="selectPage(page)"> {{ page+1 }} </a>
                     </li>
                     <li class="page-item" v-if="pageNumber < pageCount - 1">
-                      <a href="#" class="page-link" @click.prevent="nextPage">Post</a>
+                      <a href="#" class="page-link" @click.prevent="nextPage">Siguiente</a>
                     </li>
                   </ul>
                 </div>
@@ -83,16 +81,18 @@
             </div>
           </div>
 
-        <div id="container-floating" v-tooltip.left="'Crear nuevo permiso'">
-            <router-link :to="'/permiso/crear'">
+          <template v-if="listaPermisosByRol.includes('permiso.crear')">
+            <div id="container-floating" v-tooltip.left="'Crear nuevo permiso'">
+              <router-link :to="{ name: 'permiso.crear' }">
                 <div id="floating-button">
-                    <p class="plus">+</p>
-                    <div class="plusH">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
+                  <p class="plus">+</p>
+                  <div class="plusH">
+                    <i class="fas fa-user-plus"></i>
+                  </div>
                 </div>
-            </router-link>
-        </div>
+              </router-link>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -103,6 +103,7 @@
     data(){
       return {
         listPermiso: [],
+        listaPermisosByRol: JSON.parse(sessionStorage.getItem('listaPermisosByRol')),
         filtro: '',
         criterio: '',
         pageNumber: 0,
@@ -114,6 +115,9 @@
         }, {
           value: 'slug',
           label: 'Url'
+        }, {
+          value: 'modulo',
+          label: 'Módulo'
         }],
       }
     },
@@ -156,11 +160,19 @@
         this.fullscreenLoading = true;
 
         var url = '/permiso/getListaPermisos?filtro=' + filtro +'&criterio=' + criterio ;
+        
         axios.get(url).then(response => {
           this.inicializarPaginacion();
           console.log(response);
           this.listPermiso = response.data;
           this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       nextPage(){

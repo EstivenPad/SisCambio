@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Permisos;
 class PermisosController extends Controller
 {
-    public function getListaPermisos(Request $request){
+    public function getListaPermisos(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
         $filtro = $request->filtro;
         $criterio = $request->criterio;
         $filtroaplicado = $request->filtroaplicado;

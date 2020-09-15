@@ -53,17 +53,24 @@
                       </td>
                       <td>
                         <template v-if="item.estado == 1">
-                          <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'moneda.editar', params: { id: item.id }}">
-                            <i class="fas fa-pencil-alt"></i> Editar
-                          </router-link>
-                          <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoMoneda(1, item.id, criterio)">
-                            <i class="fas fa-trash"></i> Desactivar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('moneda.editar')">
+                            <router-link class="btn btn-flat btn-info btn-sm" :to="{name:'moneda.editar', params: { id: item.id }}">
+                              <i class="fas fa-pencil-alt"></i> Editar
+                            </router-link>
+                          </template>
+
+                          <template v-if="listaPermisosByRol.includes('moneda.desactivar')">
+                            <button class="btn btn-flat btn-danger btn-sm" @click.prevent="setCambiarEstadoMoneda(1, item.id, criterio)">
+                              <i class="fas fa-trash"></i> Desactivar
+                            </button>
+                          </template>
                         </template> 
                         <template v-else>
-                          <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoMoneda(2, item.id, criterio)">
-                            <i class="fas fa-check"></i> Activar
-                          </button>
+                          <template v-if="listaPermisosByRol.includes('moneda.activar')">
+                            <button class="btn btn-flat btn-success btn-sm" @click.prevent="setCambiarEstadoMoneda(2, item.id, criterio)">
+                              <i class="fas fa-check"></i> Activar
+                            </button>
+                          </template>
                         </template>                           
                         
                       </td>
@@ -89,16 +96,18 @@
             </div>
           </div>
           
-        <div id="container-floating" v-tooltip.left="'Crear nueva moneda'">
-            <router-link :to="'/moneda/crear'">
-                <div id="floating-button">
+          <template v-if="listaPermisosByRol.includes('moneda.crear')">
+            <div id="container-floating" v-tooltip.left="'Crear nueva moneda'">
+                <router-link :to="{ name: 'moneda.crear' }">
+                  <div id="floating-button">
                     <p class="plus">+</p>
                     <div class="plusH">
-                        <i class="fas fa-user-plus"></i>
+                      <i class="fas fa-user-plus"></i>
                     </div>
-                </div>
-            </router-link>
-        </div>
+                  </div>
+                </router-link>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -109,6 +118,7 @@
     data(){
       return {
         listaMonedas: [],
+        listaPermisosByRol: JSON.parse(sessionStorage.getItem('listaPermisosByRol')),
         criterio: '',
         pageNumber: 0, //Numero de la pagina actual, que siempre se inicializa en 0
         perPage: 15, //Cantidad de registros por pagina
@@ -156,12 +166,21 @@
       getListaMoneda(criterio){
         this.fullscreenLoading = true;
         this.listaMonedas = [];
+        
         var url = '/moneda/getListaMonedas?criterio=' + criterio;
+
         axios.get(url).then(response => {
           this.inicializarPaginacion();
           console.log(response);
           this.listaMonedas = response.data;
           this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
         })
       },
       paginaSiguiente(){
@@ -201,6 +220,13 @@
               })
 
               this.getListaMoneda(criterio);
+            }).catch(error => {
+              if(error.response.status == 401){
+                this.$router.push({name: 'login'});
+                location.reload();
+                sessionStorage.clear();
+                this.fullscreenLoading = false;
+              }
             })
           }
         })
