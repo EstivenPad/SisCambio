@@ -29,5 +29,5 @@ Vue.component('Auth', require('./components/Auth.vue').default);
 
 const app = new Vue({
     el: '#app',
-    router
+    router,
 });

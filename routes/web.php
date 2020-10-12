@@ -62,6 +62,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/almacen/getAlmacenEditar', 'AlmacenController@getAlmacenEditar');
     Route::post('/almacen/setEditarAlmacen', 'AlmacenController@setEditarAlmacen');
     Route::put('/almacen/setCambiarEstadoAlmacen', 'AlmacenController@setCambiarEstadoAlmacen'); 
+
+    /*************** Transaccion ******************/
+    
+    Route::get('/transaccion/getListaTransacciones', 'TransaccionController@getListaTransacciones');
+    Route::post('/transaccion/setRegistrarTransaccion', 'TransaccionController@setRegistrarTransaccion');
 });
 
 Route::get('/{optional?}', function () {

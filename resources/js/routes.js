@@ -18,15 +18,14 @@ function verificarAcceso(to, from, next){
                     listaPermisosByRolFiltrada.push(item)
                 }
             })
+            
             if(to.name == 'index'){
                 next({ name: listaPermisosByRolFiltrada[0] });
             }else{
                 next(from.path);
             }
 
-            console.log(listaPermisosByRolFiltrada);
-            
-            
+            console.log(listaPermisosByRolFiltrada);    
         }
     }else{
         next('/login');
@@ -157,6 +156,24 @@ export const rutas = [
             verificarAcceso(to, from, next);
         }, 
         props: true
+    },
+
+    /************** Transaccion *****************/
+    { 
+        path: '/transaccion', 
+        name: 'transaccion.index',
+        component: require('./components/modulos/transaccion/index').default,
+        beforeEnter: (to, from, next) => {
+            verificarAcceso(to, from, next);
+        }  
+    },
+    { 
+        path: '/transaccion/crear', 
+        name: 'transaccion.crear',
+        component: require('./components/modulos/transaccion/crear').default,
+        beforeEnter: (to, from, next) => {
+            verificarAcceso(to, from, next);
+        }  
     },
 
     /************** Rol *****************/

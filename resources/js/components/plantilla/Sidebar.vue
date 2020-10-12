@@ -40,14 +40,14 @@
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                    <template v-if="listaPermisos.includes('dashboard.index')">
+                    <template v-if="listaPermisos.includes('index')">
                         <router-link class="nav-link" :to="'/'" >
                         <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
+                        <p>Inicio</p>
                         </router-link>
                     </template>
                 </li>
-                <template v-if="listaPermisos.includes('cliente.index', 'moneda.index', 'almacen.index')">
+                <template v-if="listaPermisos.includes('cliente.index', 'moneda.index', 'almacen.index', 'transaccion.index')">
                     <li class="nav-header">OPERACIONES</li>
                     <li class="nav-item">
                         <template v-if="listaPermisos.includes('cliente.index')">
@@ -70,6 +70,14 @@
                             <router-link class="nav-link" :to="'/almacen'" >
                             <i class="nav-icon fas fa-warehouse"></i>
                             <p>Almacenes</p>
+                            </router-link>
+                        </template>
+                    </li>
+                    <li class="nav-item">
+                        <template v-if="listaPermisos.includes('transaccion.index')">
+                            <router-link class="nav-link" :to="'/transaccion'" >
+                            <i class="nav-icon fas fa-comments-dollar"></i>
+                            <p>Transacciones</p>
                             </router-link>
                         </template>
                     </li>

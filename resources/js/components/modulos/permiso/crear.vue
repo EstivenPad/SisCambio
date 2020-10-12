@@ -123,6 +123,9 @@
         }, {
           value: 'Almacenes',
           label: 'Almacenes'
+        }, {
+          value: 'Transacciones',
+          label: 'Transacciones'
         }],
         form: new FormData,
         fullscreenLoading: false,
