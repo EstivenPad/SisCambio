@@ -172,9 +172,6 @@
                         this.fullscreenLoading = false;
                     }
                 });
-
-                
-
             }
         }
     }

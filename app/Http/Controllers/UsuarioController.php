@@ -120,7 +120,7 @@ class UsuarioController extends Controller
         $respuesta = Usuario_Rol::where('user_id','=',$request->user_id);
 
         if($respuesta){
-            Usuario_Rol::where('user_id','=',$request->id)->delete();
+            Usuario_Rol::where('user_id','=',$request->user_id)->delete();
         }
         
         $usuario_rol = new Usuario_Rol();

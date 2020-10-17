@@ -192,7 +192,6 @@
         var url = '/transaccion/getListaTransacciones?filtro=' + filtro + '&criterio=' + criterio + '&filtroaplicado=' + filtroaplicado;
         axios.get(url).then(response => {
           this.inicializarPaginacion();
-          console.log(response);
           this.listaTransacciones = response.data;
           this.fullscreenLoading = false;
         }).catch(error => {

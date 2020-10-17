@@ -76,9 +76,9 @@
                             <el-select v-model="Transaccion.Moneda" filterable placeholder="Seleccione una Moneda">
                               <el-option
                                 v-for="item in Monedas"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
+                                :key="item.id"
+                                :label="item.nombre"
+                                :value="item.id">
                               </el-option>
                             </el-select>
                           </div>
@@ -165,16 +165,7 @@
           Precio:50.6,
           Total: '',
         },
-        Monedas: [{
-          value: 'Dolares',
-          label: 'Dolares'
-        }, {
-          value: 'Euros',
-          label: 'Euros'
-        }, {
-          value: 'Pesos Dominicanos',
-          label: 'Pesos Dominicanos'
-        }],
+        Monedas: [],
         form: new FormData,
         fullscreenLoading: false,
         modalShow: false,
@@ -189,9 +180,10 @@
         mensajeError: [],
         labelCompaVenta:"Venta",
         currentValue:true,
-
-
       }
+    },
+    mounted(){
+      this.getMonedas();
     },
     computed: {
           calcularCambio : function(){
@@ -283,7 +275,33 @@
              this.labelCompaVenta = 'Compra';
       },
 
+      getMonedas(){
+        this.fullscreenLoading = true;
 
+        var url = '/transaccion/getMonedas';
+
+        axios.get(url).then(response => {
+          var Monedas = response.data;
+
+          Monedas.forEach((item, index) => {
+            this.Monedas.push({
+              'id'  	        :   item.id,
+              'nombre'         :   item.nombre,
+              'precioVenta'   :   item.precioVenta,
+              'precioCompra'  :   item.precioCompra
+            });
+          });
+
+          this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
+      }
     }
   }
 </script>
