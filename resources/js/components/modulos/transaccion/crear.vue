@@ -1,4 +1,4 @@
-<template>
+<template >
   <div class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -24,24 +24,52 @@
                 <h3 class="card-title">Formulario Registrar Transaccion</h3>
               </div>
               <div class="card-body">
+                  <div style="text-align:center;">
+                      <h2 v-text="labelCompaVenta"></h2>
+                  </div>
                 <el-tabs type="border-card">
-                  
+
                 <!-- Pestaña de Compra y Venta -->
                 <el-tab-pane label="Compra y Venta">
-                  <form role="form">
+
+                  <form role="form" >
                     <div class="row">
-                      <div class="col-md-12">
-                        <h3 class="card-title">Compra y Venta</h3>
-                      </div>
-                      <div class="col-md-6">
+
+                      <div class="col-md-5">
                         <div class="form-group row">
-                          <label class="col-md-3 col-form-label">Tipo de transacción</label>
-                          <div class="col-md-9">
-                            <RockerSwitch :size="0.8" backgroundColorOn="#bd5757" backgroundColorOff="#0084d0" labelOn="Compra" labelOff="Venta" :value="Transaccion.Tipo"/>
+                          <label class="col-md-4 col-form-label">Tipo de transacción</label>
+                          <div class="col-md-8">
+
+                        <div class="rocker-switch-container" style="--onColor:#bd5757; --offColor:#0084d0; --borderColor:#eee; --activeColorLabel:#fff; --inactiveColorLabel:#333;">
+                             <label class="rocker" style="font-size: 0.8em;">
+                                <input type="checkbox" v-model="Transaccion.Tipo" @change="chageCompraVenta">
+                                <span class="switch-left">
+                                    <span>Compra</span>
+                                </span>
+                                <span class="switch-right">
+                                    <span>Venta</span>
+                                </span>
+                            </label>
+                        </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-6">
+                         <div class="col-md-7">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Monto</label>
+                          <div class="col-md-5" style="padding-right: 0px;" v-if="labelCompaVenta == 'Venta'">
+                            <el-input placeholder="" id="union" v-model="Transaccion.CantidadPeso">
+                              <template slot="prepend">Pesos</template>
+                            </el-input>
+                          </div>
+                              <div class="col-md-5" style="padding-left: 0px;">
+                            <el-input placeholder="" v-model="Transaccion.CantidadDivisa">
+                              <template slot="prepend">{{Transaccion.Moneda}}</template>
+                            </el-input>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-5">
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label">Moneda</label>
                           <div class="col-md-9">
@@ -56,24 +84,20 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-12">
+                     <div class="col-md-7">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Monto</label>
-                          <div class="col-md-10">
-                            <el-input placeholder="" v-model="Transaccion.CantidadPeso">
-                              <template slot="prepend">Pesos Dominicanos</template>
-                            </el-input>
-                            <el-input placeholder="" v-model="Transaccion.CantidadDivisa">
-                              <template slot="prepend">Moneda Extranjera</template>
-                            </el-input>
+                          <label class="col-md-2 col-form-label">Precio</label>
+                          <div class="col-md-5">
+                            <input type="number"  class="form-control" v-model="Transaccion.Precio">
                           </div>
                         </div>
-                      </div>
+                     </div>
                       <div class="col-md-6">
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label">Total</label>
                           <div class="col-md-9">
                             <input type="text" class="form-control" v-model="Transaccion.Total" placeholder="Total">
+                            <h2 v-if="calcularCambio > 0">${{calcularCambio}} <span v-if="Transaccion.Tipo == true">Pesos.</span></h2>
                           </div>
                         </div>
                       </div>
@@ -83,10 +107,10 @@
 
                 <!-- Pestaña de Cheques -->
                 <el-tab-pane label="Cheques">
-                
+
                 </el-tab-pane>
               </el-tabs>
-              </div>                
+              </div>
               <div class="card-footer">
                 <div class="row">
                   <div class="col-md-4 offset-4">
@@ -125,18 +149,20 @@
   import RockerSwitch from "vue-rocker-switch";
   // Import styles
   import "vue-rocker-switch/dist/vue-rocker-switch.css";
-  
+
   export default {
     components: {
       RockerSwitch
     },
+
     data(){
       return {
         Transaccion: {
-          Tipo: false,
-          Moneda: '',
+          Tipo:false,
+          Moneda: 'Dolares',
           CantidadPeso: '',
           CantidadDivisa: '',
+          Precio:50.6,
           Total: '',
         },
         Monedas: [{
@@ -161,6 +187,26 @@
         },
         error: 0,
         mensajeError: [],
+        labelCompaVenta:"Venta",
+        currentValue:true,
+
+
+      }
+    },
+    computed: {
+          calcularCambio : function(){
+          //venta
+          var total = 0;
+          if(this.Transaccion.Tipo == false){
+
+          }
+          //compra
+          if(this.Transaccion.Tipo ==true){
+            if(this.Transaccion.CantidadDivisa > 0 && this.Transaccion.Precio > 0) {
+               total = (this.Transaccion.CantidadDivisa *  this.Transaccion.Precio).toFixed(2);
+               return total;
+            }
+          }
       }
     },
     methods: {
@@ -224,11 +270,55 @@
         }
 
         return this.error;
-      }
+      },
+
+      //codigo de lewis
+
+      //asignar valor Compra O Venta
+      chageCompraVenta(){
+
+       if( this.Transaccion.Tipo == false)
+            this.labelCompaVenta = 'Venta';
+          else
+             this.labelCompaVenta = 'Compra';
+      },
+
+
     }
   }
 </script>
 
 <style>
+.rocker-switch-container .rocker {
+     width: 11.6em !important;
+     overflow: inherit !important;
+    border-bottom: .5em solid #ddd !important;
+}
+
+.rocker-switch-container .switch-left {
+  width: 6em !important;
+    height: 2.68em !important;
+}
+
+.rocker-switch-container .switch-right {
+  width: 5em !important;
+}
+.rocker-switch-container input:checked+.switch-left+.switch-right, .rocker-switch-container .switch-left:before{
+
+    height: 2.83em !important;
+}
+
+.el-input-group__append, .el-input-group__prepend{
+    color: black !important;
+}
+#union.el-input__inner{
+    border-radius: 0px;
+   border-right: transparent;
+}
+#union .el-input__inner, .el-input-group__prepend {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
 
 </style>
