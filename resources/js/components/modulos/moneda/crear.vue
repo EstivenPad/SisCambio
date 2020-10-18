@@ -56,8 +56,8 @@
               <div class="card-footer">
                 <div class="row">
                   <div class="col-md-4 offset-4">
-                    <button class="btn btn-info btnWidth" @click.prevent="setRegistrarMoneda" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
                     <button class="btn btn-default btnWidth" @click.prevent="limpiarCampos">Limpiar</button>
+                    <button class="btn btn-info btnWidth" @click.prevent="setRegistrarMoneda" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
                   </div>
                 </div>
               </div>

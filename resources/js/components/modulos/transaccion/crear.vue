@@ -25,7 +25,7 @@
               </div>
               <div class="card-body">
                   <div style="text-align:center;">
-                      <h2 v-text="labelCompaVenta"></h2>
+                      <h2 v-text="labelCompraVenta"></h2>
                   </div>
                 <el-tabs type="border-card">
 
@@ -57,14 +57,14 @@
                          <div class="col-md-7">
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Monto</label>
-                          <div class="col-md-5" style="padding-right: 0px;" v-if="labelCompaVenta == 'Venta'">
+                          <div class="col-md-5" style="padding-right: 0px;" v-if="labelCompraVenta == 'Venta'">
                             <el-input placeholder="" id="union" v-model="Transaccion.CantidadPeso">
                               <template slot="prepend">Pesos</template>
                             </el-input>
                           </div>
-                              <div class="col-md-5" style="padding-left: 0px;">
+                          <div class="col-md-5" style="padding-left: 0px;">
                             <el-input placeholder="" v-model="Transaccion.CantidadDivisa">
-                              <template slot="prepend">{{Transaccion.Moneda}}</template>
+                              <template slot="prepend">{{Transaccion.Moneda.nombre}}</template>
                             </el-input>
                           </div>
                         </div>
@@ -73,12 +73,12 @@
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label">Moneda</label>
                           <div class="col-md-9">
-                            <el-select v-model="Transaccion.Moneda" filterable placeholder="Seleccione una Moneda">
+                            <el-select v-model="Transaccion.Moneda" filterable @change="getPrecioMoneda()" placeholder="Seleccione una Moneda">
                               <el-option
                                 v-for="item in Monedas"
                                 :key="item.id"
                                 :label="item.nombre"
-                                :value="item.id">
+                                :value="{ id: item.id, nombre: item.nombre}">
                               </el-option>
                             </el-select>
                           </div>
@@ -88,7 +88,7 @@
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Precio</label>
                           <div class="col-md-5">
-                            <input type="number"  class="form-control" v-model="Transaccion.Precio">
+                            <input type="number" step="0.01" min="0" class="form-control" v-model="Transaccion.Precio">
                           </div>
                         </div>
                      </div>
@@ -114,8 +114,8 @@
               <div class="card-footer">
                 <div class="row">
                   <div class="col-md-4 offset-4">
-                    <button class="btn btn-info btnWidth" @click.prevent="setRegistrarTransaccion" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
                     <button class="btn btn-default btnWidth" @click.prevent="limpiarCampos">Limpiar</button>
+                    <button class="btn btn-info btnWidth" @click.prevent="setRegistrarTransaccion" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
                   </div>
                 </div>
               </div>
@@ -158,11 +158,11 @@
     data(){
       return {
         Transaccion: {
-          Tipo:false,
-          Moneda: 'Dolares',
+          Tipo: false,
+          Moneda: '',
           CantidadPeso: '',
           CantidadDivisa: '',
-          Precio:50.6,
+          Precio: '',
           Total: '',
         },
         Monedas: [],
@@ -178,12 +178,13 @@
         },
         error: 0,
         mensajeError: [],
-        labelCompaVenta:"Venta",
+        labelCompraVenta:"Venta",
         currentValue:true,
       }
     },
     mounted(){
       this.getMonedas();
+      this.Transaccion.Moneda = 'Seleccione una moneda';
     },
     computed: {
           calcularCambio : function(){
@@ -208,8 +209,9 @@
       limpiarCampos(){
         this.Transaccion.Tipo = false;
         this.Transaccion.Moneda = 'Seleccione una moneda';
-        this.Transaccion.PrecioCompra = '';
-        this.Transaccion.PrecioVenta = '';
+        this.Transaccion.CantidadPeso = '';
+        this.Transaccion.CantidadDivisa = '';
+        this.Transaccion.Precio = '';
         this.Transaccion.Total = '';
       },
       setRegistrarTransaccion(){
@@ -223,7 +225,7 @@
       },
       setGuardarMoneda(){
         this.form.append("tipo", this.Transaccion.Tipo);
-        this.form.append("moneda", this.Transaccion.Moneda);
+        this.form.append("moneda", this.Transaccion.Moneda.id);
         this.form.append("precioCompra", this.Transaccion.PrecioCompra);
         this.form.append("precioVenta", this.Transaccion.PrecioVenta);
         this.form.append("total", this.Transaccion.Total);
@@ -263,18 +265,6 @@
 
         return this.error;
       },
-
-      //codigo de lewis
-
-      //asignar valor Compra O Venta
-      chageCompraVenta(){
-
-       if( this.Transaccion.Tipo == false)
-            this.labelCompaVenta = 'Venta';
-          else
-             this.labelCompaVenta = 'Compra';
-      },
-
       getMonedas(){
         this.fullscreenLoading = true;
 
@@ -301,6 +291,31 @@
             this.fullscreenLoading = false;
           }
         })
+      },
+      getPrecioMoneda(){
+        this.Monedas.forEach((item, index) => {
+          if(item.id == this.Transaccion.Moneda.id){
+            if (this.labelCompraVenta == 'Venta') {
+              this.Transaccion.Precio = item.precioVenta;
+            }else{
+              this.Transaccion.Precio = item.precioCompra;
+            }
+          }
+        });
+      },
+
+      //codigo de lewis
+
+      //asignar valor Compra O Venta
+      chageCompraVenta(){
+        
+        if(this.Transaccion.Tipo == false){
+          this.labelCompraVenta = 'Venta';
+          this.getPrecioMoneda();
+        }else{
+          this.labelCompraVenta = 'Compra';
+          this.getPrecioMoneda();
+        }
       }
     }
   }
