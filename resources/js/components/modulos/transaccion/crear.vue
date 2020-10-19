@@ -169,7 +169,7 @@
           Tipo: true,
           Moneda: {id:1, nombre:'Dolares'},
           CantidadPeso: 0,
-          CantidadDivisa: '',
+          CantidadDivisa: 0,
           Precio: '',
           Total: '',
         },
@@ -243,17 +243,18 @@
         }
 
         this.fullscreenLoading = true;
-        this.setGuardarMoneda();
+        this.setGuardarTransaccion();
       },
-      setGuardarMoneda(){
-        this.form.append("tipo", this.Transaccion.Tipo);
-        this.form.append("moneda", this.Transaccion.Moneda.id);
-        this.form.append("precioCompra", this.Transaccion.PrecioCompra);
-        this.form.append("precioVenta", this.Transaccion.PrecioVenta);
+      setGuardarTransaccion(){
+        this.form.append("tipo", this.labelCompraVenta);
+        this.form.append("moneda_id", this.Transaccion.Moneda.id);
+        this.form.append("cantidadPeso", this.Transaccion.CantidadPeso);
+        this.form.append("cantidadDivisa", this.Transaccion.CantidadDivisa);
+        this.form.append("precio", this.Transaccion.Precio);
         this.form.append("total", this.Transaccion.Total);
 
         const config = { headers: { 'Content-Type':'multipart/form-data' }};
-        var url = '/transaccion/setRegistrarTransaccion';
+        var url = '/transaccion/setRegistrarTransaccionCompraVenta';
 
         axios.post(url, this.form, config).then(response => {
           console.log('Se registró la transacción exitosamente');
@@ -275,16 +276,21 @@
         if(!this.Transaccion.Moneda){
           this.mensajeError.push("La Moneda es un campo obligatorio")
         }
-        if(this.Transaccion.Tipo == false){
 
-            if(!this.Transaccion.CantidadDivisa){
-                this.mensajeError.push("El Precio del Monto "+this.Transaccion.Moneda.nombre+" es obligatorio" )
-            }
-        }
-        if(!this.Transaccion.CantidadPeso){
-          this.mensajeError.push("El Precio del Monto Peso es obligatorio")
-        }
+        if(this.Transaccion.Tipo == true){
+          if(this.Transaccion.CantidadDivisa <= 0){
+              this.mensajeError.push("El Monto en " + this.Transaccion.Moneda.nombre + " no puede ser menor o igual a cero")
+          }
+        }else{
+          if(this.Transaccion.CantidadPeso <= 0 && this.Transaccion.CantidadDivisa <= 0){
+            this.mensajeError.push("Ambos Montos no pueden ser menor o igual a cero")
+          }
+        } 
 
+        if(this.Transaccion.Precio <= 0){
+          this.mensajeError.push("El Precio no puede ser menor o igual a cero")
+        }
+        
         if(this.mensajeError.length){
           this.error = 1;
         }
