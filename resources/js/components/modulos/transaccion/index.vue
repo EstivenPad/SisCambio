@@ -44,9 +44,11 @@
                   <thead> 
                     <tr>
                       <th>Tipo</th>
+                      <th>Fecha</th>
                       <th>Moneda</th>
-                      <th>Cantidad Pesos Dominicanos</th>
-                      <th>Cantidad Moneda Extranjera</th>
+                      <th>Precio</th>
+                      <th>Monto Pesos</th>
+                      <th>Monto Divisas</th>
                       <th>Total</th>
                       <th>Estado</th>
                       <th>Acción</th>
@@ -55,7 +57,9 @@
                   <tbody>
                     <tr v-for="(item, index) in listarTransaccionesPaginadas" :key="index">
                       <td v-text="item.tipo"></td>
-                      <td v-text="item.moneda"></td>
+                      <td v-text="item.fecha"></td>
+                      <td v-text="item.nombre"></td>
+                      <td v-text="item.precio"></td>
                       <td v-text="item.cantidadPeso"></td>
                       <td v-text="item.cantidadDivisa"></td>
                       <td v-text="item.total"></td>
@@ -217,7 +221,7 @@
       },
       setCambiarEstadoTransaccion(opc, id, filtro, criterio){
         Swal.fire({
-          title: '¿Está seguro de ' + ((opc == 1) ? 'desactivar' : 'activar') + ' la transaccion?',
+          title: '¿Está seguro de ' + ((opc == 1) ? 'desactivar' : 'activar') + ' la transacción?',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -234,7 +238,7 @@
             }).then(response => {
               Swal.fire({
                 icon: 'success',
-                title: 'Se ' + ((opc == 1) ? 'desactivó' : 'activó') + ' el transaccion',
+                title: 'Se ' + ((opc == 1) ? 'desactivó' : 'activó') + ' la transacción',
                 showConfirmButton: false,
                 timer: 1530
               })

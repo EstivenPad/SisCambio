@@ -21,7 +21,11 @@ class TransaccionController extends Controller
         
         //Si no hay un criterio establecido ni se ha aplicado algun filtro
         if($criterio == '' && $filtroaplicado == 0){
-            $transacciones = Transaccion::orderBy('id','desc')->get();            
+            $transacciones = DB::table('transaccion')
+            ->join('moneda','transaccion.moneda_id','=','moneda.id')
+            ->select('transaccion.*', 'moneda.nombre')
+            ->orderBy('id','desc')
+            ->get();
         }        
         //Si se desea filtrar por los registros activos, sin importar que el criterio este lleno o vacio
         if($filtro == 'A'){
@@ -43,7 +47,7 @@ class TransaccionController extends Controller
     {   
         if(!$request->ajax()) return redirect('/');
 
-        $num = Numero::find(1);
+        $num = Numero::findOrFail(1);
 
         $transaccion = new Transaccion();
         
@@ -60,6 +64,15 @@ class TransaccionController extends Controller
 
         $num->vc = $num->vc + 1;
         $num->save();
+    }
+
+    public function setCambiarEstadoTransaccion(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $transaccion = Transaccion::findOrFail($request->id);
+        $transaccion->estado = ($transaccion->estado == 1 ? 0 : 1);
+        $transaccion->save(); 
     }
 
     public function getMonedas(Request $request)
