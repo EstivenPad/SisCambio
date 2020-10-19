@@ -24,9 +24,14 @@
                 <h3 class="card-title">Formulario Registrar Transaccion</h3>
               </div>
               <div class="card-body">
-                  <div style="text-align:center;">
+                  <div class="row">
+                  <div class="col-md-6" style="text-align:right;">
                       <h2 v-text="labelCompraVenta"></h2>
                   </div>
+                   <div class="col-md-6" style="text-align:right;">
+                        <h2 style="font-weight:300;">Total:<span v-if="calcularCambio == null">00.0</span><span v-if="calcularCambio > 0" style="font-weight:500;">${{calcularCambio}} <span v-if="Transaccion.Tipo == true">Pesos.</span><span v-if="Transaccion.Tipo == false && Transaccion.CantidadPeso > 0">{{Transaccion.Moneda.nombre}}.</span><span v-if="Transaccion.Tipo == false && Transaccion.CantidadDivisa > 0">Pesos.</span></span></h2>
+                    </div>
+                </div>
                 <el-tabs type="border-card">
 
                 <!-- Pestaña de Compra y Venta -->
@@ -58,12 +63,12 @@
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Monto</label>
                           <div class="col-md-5" style="padding-right: 0px;" v-if="labelCompraVenta == 'Venta'">
-                            <el-input placeholder="" id="union" v-model="Transaccion.CantidadPeso">
+                            <el-input  @input="changeMonto('pesos')" min="5" type="number" placeholder="" id="union" v-model="Transaccion.CantidadPeso">
                               <template slot="prepend">Pesos</template>
                             </el-input>
                           </div>
                           <div class="col-md-5" style="padding-left: 0px;">
-                            <el-input placeholder="" v-model="Transaccion.CantidadDivisa">
+                            <el-input autofocus="true" type="number" min="5" @input="changeMonto('divisas')" placeholder="" v-model="Transaccion.CantidadDivisa">
                               <template slot="prepend">{{Transaccion.Moneda.nombre}}</template>
                             </el-input>
                           </div>
@@ -73,14 +78,14 @@
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label">Moneda</label>
                           <div class="col-md-9">
-                            <el-select v-model="Transaccion.Moneda" filterable @change="getPrecioMoneda()" placeholder="Seleccione una Moneda">
-                              <el-option
+                            <select v-model="Transaccion.Moneda" class="form-control" @change="getPrecioMoneda()">
+                              <option
                                 v-for="item in Monedas"
                                 :key="item.id"
                                 :label="item.nombre"
                                 :value="{ id: item.id, nombre: item.nombre}">
-                              </el-option>
-                            </el-select>
+                              </option>
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -88,7 +93,7 @@
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Precio</label>
                           <div class="col-md-5">
-                            <input type="number" step="0.01" min="0" class="form-control" v-model="Transaccion.Precio">
+                            <input type="number" step="any" min="0" class="form-control" v-model="Transaccion.Precio">
                           </div>
                         </div>
                      </div>
@@ -97,9 +102,12 @@
                           <label class="col-md-3 col-form-label">Total</label>
                           <div class="col-md-9">
                             <input type="text" class="form-control" v-model="Transaccion.Total" placeholder="Total">
-                            <h2 v-if="calcularCambio > 0">${{calcularCambio}} <span v-if="Transaccion.Tipo == true">Pesos.</span></h2>
                           </div>
                         </div>
+                      </div>
+                      <div class="col-md-6" style="display: flex;">
+                            <h2 style="font-weight:300;">Total:<span v-if="calcularCambio == null">00.0</span></h2>
+                            <h2 v-if="calcularCambio > 0">${{calcularCambio}} <span v-if="Transaccion.Tipo == true">Pesos.</span></h2>
                       </div>
                     </div>
                   </form>
@@ -158,9 +166,9 @@
     data(){
       return {
         Transaccion: {
-          Tipo: false,
-          Moneda: '',
-          CantidadPeso: '',
+          Tipo: true,
+          Moneda: {id:1, nombre:'Dolares'},
+          CantidadPeso: 0,
           CantidadDivisa: '',
           Precio: '',
           Total: '',
@@ -178,28 +186,41 @@
         },
         error: 0,
         mensajeError: [],
-        labelCompraVenta:"Venta",
+        labelCompraVenta:"Compra",
         currentValue:true,
       }
     },
     mounted(){
       this.getMonedas();
-      this.Transaccion.Moneda = 'Seleccione una moneda';
+
+
     },
     computed: {
           calcularCambio : function(){
           //venta
           var total = 0;
           if(this.Transaccion.Tipo == false){
+              if ((this.Transaccion.CantidadDivisa > 0 || this.Transaccion.CantidadPeso > 0 ) && this.Transaccion.Precio > 0) {
+                  if(this.Transaccion.CantidadDivisa > 0){
+                    total = (this.Transaccion.CantidadDivisa * this.Transaccion.Precio).toFixed(2);
+
+                  }
+                  if(this.Transaccion.CantidadPeso > 0){
+                    total = (this.Transaccion.CantidadPeso /  this.Transaccion.Precio).toFixed(2);
+
+                  }
+              }
 
           }
           //compra
           if(this.Transaccion.Tipo ==true){
             if(this.Transaccion.CantidadDivisa > 0 && this.Transaccion.Precio > 0) {
                total = (this.Transaccion.CantidadDivisa *  this.Transaccion.Precio).toFixed(2);
-               return total;
+
             }
           }
+          this.Transaccion.Total = total;
+          return total;
       }
     },
     methods: {
@@ -208,11 +229,12 @@
       },
       limpiarCampos(){
         this.Transaccion.Tipo = false;
-        this.Transaccion.Moneda = 'Seleccione una moneda';
         this.Transaccion.CantidadPeso = '';
         this.Transaccion.CantidadDivisa = '';
         this.Transaccion.Precio = '';
         this.Transaccion.Total = '';
+        this.Transaccion.Moneda = {id:1, nombre:'Dolares'};
+        this.getPrecioMoneda();
       },
       setRegistrarTransaccion(){
         if(this.validarCampos()){
@@ -253,12 +275,16 @@
         if(!this.Transaccion.Moneda){
           this.mensajeError.push("La Moneda es un campo obligatorio")
         }
-        if(!this.Transaccion.PrecioCompra){
-          this.mensajeError.push("El Precio de Compra es un campo obligatorio")
+        if(this.Transaccion.Tipo == false){
+
+            if(!this.Transaccion.CantidadDivisa){
+                this.mensajeError.push("El Precio del Monto "+this.Transaccion.Moneda.nombre+" es obligatorio" )
+            }
         }
-        if(!this.Transaccion.PrecioVenta){
-          this.mensajeError.push("El Precio de Venta es un campo obligatorio")
+        if(!this.Transaccion.CantidadPeso){
+          this.mensajeError.push("El Precio del Monto Peso es obligatorio")
         }
+
         if(this.mensajeError.length){
           this.error = 1;
         }
@@ -281,7 +307,7 @@
               'precioCompra'  :   item.precioCompra
             });
           });
-
+        this.getPrecioMoneda();
           this.fullscreenLoading = false;
         }).catch(error => {
           if(error.response.status == 401){
@@ -291,6 +317,7 @@
             this.fullscreenLoading = false;
           }
         })
+
       },
       getPrecioMoneda(){
         this.Monedas.forEach((item, index) => {
@@ -308,14 +335,29 @@
 
       //asignar valor Compra O Venta
       chageCompraVenta(){
-        
+
         if(this.Transaccion.Tipo == false){
           this.labelCompraVenta = 'Venta';
+          $('#union').focus();
           this.getPrecioMoneda();
+
+
         }else{
           this.labelCompraVenta = 'Compra';
+          $('#union').focus();
           this.getPrecioMoneda();
+
         }
+      },
+      changeMonto(valor){
+
+          if (valor == "pesos") {
+
+              this.Transaccion.CantidadDivisa = 0;
+          } else {
+
+              this.Transaccion.CantidadPeso = 0;
+          }
       }
     }
   }
