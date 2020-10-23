@@ -83,4 +83,13 @@ class TransaccionController extends Controller
 
         return $monedas;
     }
+
+    public function getBancos(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $bancos = DB::table('banco')->get();
+
+        return $bancos;
+    }
 }

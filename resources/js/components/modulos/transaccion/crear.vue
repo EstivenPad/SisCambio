@@ -36,7 +36,6 @@
 
                 <!-- Pestaña de Compra y Venta -->
                 <el-tab-pane label="Compra y Venta">
-
                   <form role="form" >
                     <div class="row">
 
@@ -89,14 +88,14 @@
                           </div>
                         </div>
                       </div>
-                     <div class="col-md-7">
-                        <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Precio</label>
-                          <div class="col-md-5">
-                            <input type="number" step="any" min="0" class="form-control" v-model="Transaccion.Precio">
+                      <div class="col-md-7">
+                          <div class="form-group row">
+                            <label class="col-md-2 col-form-label">Precio</label>
+                            <div class="col-md-5">
+                              <input type="number" step="any" min="0" class="form-control" v-model="Transaccion.Precio">
+                            </div>
                           </div>
-                        </div>
-                     </div>
+                      </div>
                       <div class="col-md-6">
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label">Total</label>
@@ -115,10 +114,131 @@
 
                 <!-- Pestaña de Cheques -->
                 <el-tab-pane label="Cheques">
+                  <form role="form" >
+                    <div class="row">
 
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Fecha de emisión</label>
+                          <div class="col-md-3">
+                            <input type="date" v-model="Cheque.FechaEmision">
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Banco</label>
+                          <div class="col-md-3">
+                            <el-select v-model="Cheque.Banco" placeholder="Seleccione un banco">
+                              <el-option
+                                v-for="item in Bancos"
+                                :key="item.id"
+                                :label="item.nombre"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Cliente</label>
+                          <div class="col-md-3">
+                            <el-select v-model="Cheque.Cliente" placeholder="Seleccione un cliente">
+                              <el-option
+                                v-for="item in Clientes"
+                                :key="item.id"
+                                :label="item.nombre"
+                                :value="item.id">
+                              </el-option>
+                            </el-select>
+                            <button type="button" class="btn btn-outline-primary"><i class="fas fa-user-plus"></i></button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Moneda</label>
+                          <div class="col-md-3">
+                            <select v-model="Cheque.Moneda" class="form-control">
+                              <option
+                                v-for="item in Monedas"
+                                :key="item.id"
+                                :label="item.nombre"
+                                :value="{ id: item.id, nombre: item.nombre }">
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                          <div class="form-group row">
+                            <label class="col-md-2 col-form-label">Número de Cheque</label>
+                            <div class="col-md-3">
+                              <input type="text" class="form-control" v-model="Cheque.NumeroCheque" placeholder="Ej. 1234">
+                            </div>
+                          </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Concepto</label>
+                          <div class="col-md-3">
+                            <el-input
+                              type="textarea"
+                              :rows="4"
+                              placeholder="Concepto del cheque"
+                              v-model="Cheque.Concepto">
+                            </el-input>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Monto de Cheque</label>
+                          <div class="col-md-3">
+                            <input type="number" class="form-control" v-model="Cheque.Monto">
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Porcentaje de Comisión</label>
+                          <div class="col-md-3">
+                            <div class="input-group mb-3">
+                              <input type="number" step="0.01" class="form-control" v-model="Cheque.PorcentajeComision">
+                              <div class="input-group-append">
+                                <span class="input-group-text">%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-md-2 col-form-label">Monto de Comisión</label>
+                          <div class="col-md-3">
+                            <input type="number" class="form-control" v-model="Cheque.Comision" disabled>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6" style="display: flex;">
+                        <h2 style="font-weight:300;">Total: <span v-if="calcularCambio == ''">00.0</span></h2>
+                      </div>
+                    </div>
+                  </form>
                 </el-tab-pane>
               </el-tabs>
               </div>
+
               <div class="card-footer">
                 <div class="row">
                   <div class="col-md-4 offset-4">
@@ -171,9 +291,23 @@
           CantidadPeso: 0,
           CantidadDivisa: 0,
           Precio: '',
+          Total: ''
+        },
+        Cheque: {
+          FechaEmision: '',
+          Banco: '',
+          Cliente: '',
+          Moneda: {id:1, nombre:'Dolares'},
+          NumeroCheque: '',
+          Concepto: '',
+          Monto: '',
+          PorcentajeComision: 2.5,
+          Comision: '',
           Total: '',
         },
         Monedas: [],
+        Bancos: [],
+        Clientes: [],
         form: new FormData,
         fullscreenLoading: false,
         modalShow: false,
@@ -193,7 +327,7 @@
     mounted(){
       this.getMonedas();
 
-
+      this.getBancos();
     },
     computed: {
           calcularCambio : function(){
@@ -313,7 +447,9 @@
               'precioCompra'  :   item.precioCompra
             });
           });
-        this.getPrecioMoneda();
+          
+          this.getPrecioMoneda();
+          
           this.fullscreenLoading = false;
         }).catch(error => {
           if(error.response.status == 401){
@@ -336,6 +472,31 @@
           }
         });
       },
+      getBancos(){
+        this.fullscreenLoading = true;
+
+        var url = '/transaccion/getBancos';
+
+        axios.get(url).then(response => {
+          var Bancos = response.data;
+
+          Bancos.forEach((item, index) => {
+            this.Bancos.push({
+              'id'  	   :   item.id,
+              'nombre'   :   item.nombre
+            });
+          });
+
+          this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
+      },
 
       //codigo de lewis
 
@@ -346,8 +507,6 @@
           this.labelCompraVenta = 'Venta';
           $('#union').focus();
           this.getPrecioMoneda();
-
-
         }else{
           this.labelCompraVenta = 'Compra';
           $('#union').focus();
