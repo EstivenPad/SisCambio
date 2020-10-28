@@ -44,7 +44,7 @@
                           <label class="col-md-4 col-form-label">Tipo de transacción</label>
                           <div class="col-md-8">
 
-                        <div class="rocker-switch-container" style="--onColor:#bd5757; --offColor:#0084d0; --borderColor:#eee; --activeColorLabel:#fff; --inactiveColorLabel:#333;">
+                          <div class="rocker-switch-container" style="--onColor:#bd5757; --offColor:#0084d0; --borderColor:#eee; --activeColorLabel:#fff; --inactiveColorLabel:#333;">
                              <label class="rocker" style="font-size: 0.8em;">
                                 <input type="checkbox" v-model="Transaccion.Tipo" @change="chageCompraVenta">
                                 <span class="switch-left">
@@ -54,11 +54,12 @@
                                     <span>Venta</span>
                                 </span>
                             </label>
-                        </div>
+                          </div>
                           </div>
                         </div>
                       </div>
-                         <div class="col-md-7">
+
+                      <div class="col-md-7">
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Monto</label>
                           <div class="col-md-5" style="padding-right: 0px;" v-if="labelCompraVenta == 'Venta'">
@@ -146,15 +147,15 @@
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Cliente</label>
                           <div class="col-md-3">
-                            <el-select v-model="Cheque.Cliente" placeholder="Seleccione un cliente">
+                            <el-select v-model="Cheque.Cliente" placeholder="Seleccione un cliente" filterable>
                               <el-option
                                 v-for="item in Clientes"
                                 :key="item.id"
-                                :label="item.nombre"
+                                :label="item.nombre + ' ' + item.apellido"
                                 :value="item.id">
                               </el-option>
                             </el-select>
-                            <button type="button" class="btn btn-outline-primary"><i class="fas fa-user-plus"></i></button>
+                            <button type="button" @click="modalShowCliente = !modalShowCliente" class="btn btn-outline-primary"><i class="fas fa-user-plus"></i></button>
                           </div>
                         </div>
                       </div>
@@ -225,7 +226,7 @@
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Monto de Comisión</label>
                           <div class="col-md-3">
-                            <input type="number" class="form-control" v-model="Cheque.Comision" disabled>
+                            <input type="number" class="form-control" v-model="Cheque.Comision">
                           </div>
                         </div>
                       </div>
@@ -253,11 +254,47 @@
       </div>
     </div>
 
+    <!-- Modal para mostrar un pequeño registro de cliente -->
+    <div class="modal fade" aria-hidden="true" :class="{ show: modalShowCliente }" :style=" modalShowCliente ? mostrarModal : ocultarModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h5 class="modal-title">Registro de Cliente</h5>
+                    <button class="close" @click="abrirModalCliente"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-md-10">
+                      <div class="form-group row">
+                        <label class="col-md-4 col-form-label">Nombre</label>
+                        <div class="col-md-8">
+                          <input type="text" class="form-control" v-model="Cliente.Nombre" @keyup.enter="setGuardarCliente()" placeholder="Nombre">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-10">
+                      <div class="form-group row">
+                        <label class="col-md-4 col-form-label">Apellido</label>
+                        <div class="col-md-8">
+                          <input type="text" class="form-control" v-model="Cliente.Apellido" @keyup.enter="setGuardarCliente()" placeholder="Apellido">
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button class="btn btn-danger" @click="abrirModalCliente">Cerrar</button>
+                    <button class="btn btn-secondary" @click="limpiarCamposRegistroCliente">Limpiar</button>
+                    <button class="btn btn-info" @click="setGuardarCliente">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para mostrar los errores de validacion -->
     <div class="modal fade" :class="{ show: modalShow }" :style=" modalShow ? mostrarModal : ocultarModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">SisCambio</h5>
+                    <h5 class="modal-title">Errores de validación</h5>
                     <button class="close" @click="abrirModal"></button>
                 </div>
                 <div class="modal-body">
@@ -269,6 +306,7 @@
             </div>
         </div>
     </div>
+    
   </div>
 </template>
 
@@ -303,7 +341,11 @@
           Monto: '',
           PorcentajeComision: 2.5,
           Comision: '',
-          Total: '',
+          Total: 0,
+        },
+        Cliente: {
+          Nombre: '',
+          Apellido: ''
         },
         Monedas: [],
         Bancos: [],
@@ -311,6 +353,7 @@
         form: new FormData,
         fullscreenLoading: false,
         modalShow: false,
+        modalShowCliente: false,
         mostrarModal: {
           display: 'block',
           background: '#0000006b'
@@ -322,12 +365,15 @@
         mensajeError: [],
         labelCompraVenta:"Compra",
         currentValue:true,
+        saberTab: false, // True = Compra y Venta | False = Cheques
       }
     },
     mounted(){
       this.getMonedas();
 
       this.getBancos();
+
+      this.getClientes();
     },
     computed: {
           calcularCambio : function(){
@@ -361,6 +407,12 @@
       abrirModal(){
         this.modalShow = !this.modalShow;
       },
+      abrirModalCliente(){
+        this.modalShowCliente = !this.modalShowCliente;
+
+        this.Cliente.Nombre = '';
+        this.Cliente.Apellido = '';
+      },
       limpiarCampos(){
         this.Transaccion.Tipo = false;
         this.Transaccion.CantidadPeso = '';
@@ -370,14 +422,32 @@
         this.Transaccion.Moneda = {id:1, nombre:'Dolares'};
         this.getPrecioMoneda();
       },
+      limpiarCamposRegistroCliente(){
+        this.Cliente.Nombre = '';
+        this.Cliente.Apellido = '';
+      },
       setRegistrarTransaccion(){
-        if(this.validarCampos()){
-          this.modalShow = true;
-          return;
-        }
+        if(this.saberTab == true){//True = Compra y Venta
 
-        this.fullscreenLoading = true;
-        this.setGuardarTransaccion();
+          if(this.validarCamposCompraVenta()){
+            this.modalShow = true;
+            return;
+          }
+
+          this.fullscreenLoading = true;
+          this.setGuardarTransaccion();
+
+        }else{//False = Cheques
+
+          if(this.validarCamposCheque()){
+            this.modalShow = true;
+            return;
+          }
+
+          this.fullscreenLoading = true;
+          this.setGuardarCheque();
+
+        }
       },
       setGuardarTransaccion(){
         this.form.append("tipo", this.labelCompraVenta);
@@ -403,7 +473,35 @@
           }
         });
       },
-      validarCampos(){
+      setGuardarCheque(){
+        this.form.append("fecha_emision", this.Cheque.FechaEmision);
+        this.form.append("banco_id", this.Cheque.Banco);
+        this.form.append("persona_id", this.Cheque.Cliente);
+        this.form.append("moneda_id", this.Cheque.Moneda.id);
+        this.form.append("numeroCheque", this.Cheque.NumeroCheque);
+        this.form.append("concepto", this.Cheque.Concepto);
+        this.form.append("monto", this.Cheque.Monto);
+        this.form.append("porcentajeComision", this.Cheque.PorcentajeComision);
+        this.form.append("comision", this.Cheque.Comision);
+        this.form.append("totalEntregar", this.Cheque.Total);
+
+        const config = { headers: { 'Content-Type':'multipart/form-data' }};
+        var url = '/transaccion/setRegistrarTransaccionCheque';
+
+        axios.post(url, this.form, config).then(response => {
+          console.log('Se registró la transacción exitosamente');
+          this.fullscreenLoading = false;
+          this.$router.push('/transaccion');//Redirecciona al index
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        });
+      },
+      validarCamposCompraVenta(){
         this.error = 0;
         this.mensajeError = [];
 
@@ -423,6 +521,62 @@
 
         if(this.Transaccion.Precio <= 0){
           this.mensajeError.push("El Precio no puede ser menor o igual a cero")
+        }
+        
+        if(this.mensajeError.length){
+          this.error = 1;
+        }
+
+        return this.error;
+      },
+      validarCamposCheque(){
+        this.error = 0;
+        this.mensajeError = [];
+
+        if(!this.Cheque.FechaEmision){
+          this.mensajeError.push("La Fecha de Emisión del Cheque es un campo obligatorio")
+        }
+
+        if(!this.Cheque.Banco){
+          this.mensajeError.push("El Banco es un campo obligatorio")
+        }
+
+        if(!this.Cheque.Cliente){
+          this.mensajeError.push("Debe seleccionar un Cliente")
+        }
+
+        if(!this.Cheque.NumeroCheque){
+          this.mensajeError.push("El Número de Cheque es un campo obligatorio")
+        }
+
+        if(!this.Cheque.Concepto){
+          this.mensajeError.push("El Concepto del Cheque es un campo obligatorio")
+        }
+
+        if(!this.Cheque.Monto){
+          this.mensajeError.push("El Monto del Cheque es un campo obligatorio")
+        }
+
+        if(!this.Cheque.PorcentajeComision){
+          this.mensajeError.push("El Porcentaje de Comisión es un campo obligatorio")
+        }
+        
+        if(this.mensajeError.length){
+          this.error = 1;
+        }
+
+        return this.error;
+      },
+      validarCamposRegistroCliente(){
+        this.error = 0;
+        this.mensajeError = [];
+
+        if(!this.Cliente.Nombre){
+          this.mensajeError.push("El nombre es un campo obligatorio")
+        }
+
+        if(!this.Cliente.Apellido){
+          this.mensajeError.push("El apellido es un campo obligatorio")
         }
         
         if(this.mensajeError.length){
@@ -497,7 +651,60 @@
           }
         })
       },
+      getClientes(){
+        this.fullscreenLoading = true;
 
+        var url = '/transaccion/getClientes';
+
+        axios.get(url).then(response => {
+          var Clientes = response.data;
+
+          Clientes.forEach((item, index) => {
+            this.Clientes.push({
+              'id'  	   :   item.id,
+              'nombre'   :   item.nombre,
+              'apellido' :   item.apellido
+            });
+          });
+
+          this.fullscreenLoading = false;
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        })
+      },
+      setGuardarCliente(){
+        if(this.validarCamposRegistroCliente()){
+          this.modalShow = true;
+          return;
+        }
+
+        this.fullscreenLoading = true;
+        var url = '/transaccion/setRegistrarCliente';
+
+        axios.post(url, {
+          'nombre' : this.Cliente.Nombre,
+          'apellido' : this.Cliente.Apellido
+        }).then(response => {
+          this.Clientes = [];//Vacio el select de Clientes para volverlo a llenar con el nuevo cliente que acabo de crear
+
+          this.getClientes();//Vuelvo a cargar el select de Clientes para que aparezca el nuevo cliente que acabo de crear
+
+          this.fullscreenLoading = false;
+          this.modalShowCliente = !this.modalShowCliente;//Cierro el modal del Registro de Cliente al terminar de guardar el Cliente
+        }).catch(error => {
+          if(error.response.status == 401){
+            this.$router.push({name: 'login'});
+            location.reload();
+            sessionStorage.clear();
+            this.fullscreenLoading = false;
+          }
+        });
+      },
       //codigo de lewis
 
       //asignar valor Compra O Venta
@@ -515,7 +722,6 @@
         }
       },
       changeMonto(valor){
-
           if (valor == "pesos") {
 
               this.Transaccion.CantidadDivisa = 0;
@@ -524,6 +730,7 @@
               this.Transaccion.CantidadPeso = 0;
           }
       }
+
     }
   }
 </script>

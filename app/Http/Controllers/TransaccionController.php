@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Transaccion;
+use App\Cheque;
 use App\Numero;
+use App\Cliente;
 use DB;
 
 class TransaccionController extends Controller
@@ -91,5 +93,60 @@ class TransaccionController extends Controller
         $bancos = DB::table('banco')->get();
 
         return $bancos;
+    }
+
+    public function getClientes(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $clientes = DB::table('cliente')->get();
+
+        return $clientes;
+    }
+
+    public function setRegistrarCliente(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $cliente = new Cliente();
+
+        $cliente->nombre = $request->nombre;
+        $cliente->apellido = $request->apellido;
+        $cliente->estado = 1;
+        $cliente->creado_por = 1; //Cambiar el valor de esta parte cuando se tenga el modulo de "Usuarios" terminado
+        $cliente->actualizado_por = 1; //Cambiar el valor de esta parte cuando se tenga el modulo de "Usuarios" terminado
+        $cliente->created_at = now();
+        $cliente->save();
+    }
+
+    public function setRegistrarTransaccionCheque(Request $request)
+    {
+        if(!$request->ajax()) return redirect('/');
+
+        $num = Numero::findOrFail(1);
+
+        $transaccion = new Cheque();
+        
+        $transaccion->fecha = now();
+        $transaccion->fecha_emision = $request->fecha_emision;
+        $transaccion->banco_id = $request->banco_id;
+        $transaccion->persona_id = $request->persona_id;
+        $transaccion->moneda_id = $request->moneda_id;
+        $transaccion->numero = $num->cheque;
+        $transaccion->numeroCheque = $request->numeroCheque;
+        
+        if($request->concepto){
+            $transaccion->concepto = $request->concepto;
+        }
+
+        $transaccion->monto = $request->monto;
+        $transaccion->porcentajeComision = $request->porcentajeComision;
+        $transaccion->comision = $request->comision;
+        $transaccion->totalEntregar = $request->totalEntregar;
+        $transaccion->estado = 1;
+        $transaccion->save();
+
+        $num->cheque = $num->cheque + 1;
+        $num->save();
     }
 }

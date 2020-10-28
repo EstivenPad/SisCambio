@@ -70,6 +70,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/transaccion/getMonedas', 'TransaccionController@getMonedas');
     Route::put('/transaccion/setCambiarEstadoTransaccion', 'TransaccionController@setCambiarEstadoTransaccion');
     Route::get('/transaccion/getBancos', 'TransaccionController@getBancos');
+    Route::get('/transaccion/getClientes', 'TransaccionController@getClientes');
+    Route::post('/transaccion/setRegistrarCliente', 'TransaccionController@setRegistrarCliente');
+    Route::post('/transaccion/setRegistrarTransaccionCheque', 'TransaccionController@setRegistrarTransaccionCheque');
 });
 
 Route::get('/{optional?}', function () {
