@@ -34,3 +34,4 @@ const app = new Vue({
     el: '#app',
     router,
 });
+// https://github.com/dm4t2/vue-currency-input
