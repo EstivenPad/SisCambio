@@ -27,6 +27,7 @@
         "element-ui": "^2.13.2",
         "sweetalert2": "^9.17.1",
         "v-tooltip": "^2.0.3",
+        "vue-currency-input": "^1.22.3",
         "vue-rocker-switch": "^1.2.4",
         "vue-router": "^3.4.3"
     }

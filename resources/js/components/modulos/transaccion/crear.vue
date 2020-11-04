@@ -4,6 +4,7 @@
       <div class="row mb-2">
         <div class="col-sm-6">
           <h1 class="m-0 text-dark">Crear Transaccion</h1>
+
         </div><!-- /.col -->
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -63,7 +64,7 @@
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Monto</label>
                           <div class="col-md-5" style="padding-right: 0px;" v-if="labelCompraVenta == 'Venta'">
-                            <el-input  @input="changeMonto('pesos')" min="5" type="number" placeholder="" id="union" v-model="Transaccion.CantidadPeso">
+                            <el-input  @input="changeMonto('pesos')"   min="5" type="number" placeholder="" id="union" v-model="Transaccion.CantidadPeso">
                               <template slot="prepend">Pesos</template>
                             </el-input>
                           </div>
@@ -93,7 +94,7 @@
                           <div class="form-group row">
                             <label class="col-md-2 col-form-label">Precio</label>
                             <div class="col-md-5">
-                              <input type="number" step="any" min="0" class="form-control" v-model="Transaccion.Precio">
+                              <input ref="precio" v-currency="optionCurrency" class="form-control" v-model="PrecioString">
                             </div>
                           </div>
                       </div>
@@ -288,7 +289,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Modal para mostrar los errores de validacion -->
     <div class="modal fade" :class="{ show: modalShow }" :style=" modalShow ? mostrarModal : ocultarModal">
         <div class="modal-dialog" role="document">
@@ -306,11 +307,14 @@
             </div>
         </div>
     </div>
-    
+
   </div>
 </template>
 
 <script>
+   import { getValue,setValue } from "vue-currency-input";
+
+   import { CurrencyDirective } from 'vue-currency-input'
   // Import package
   import RockerSwitch from "vue-rocker-switch";
   // Import styles
@@ -320,7 +324,9 @@
     components: {
       RockerSwitch
     },
-
+     directives: {
+    currency: CurrencyDirective
+  },
     data(){
       return {
         Transaccion: {
@@ -342,6 +348,12 @@
           PorcentajeComision: 2.5,
           Comision: '',
           Total: 0,
+        },
+        optionCurrency:{
+            currency: 'USD',
+            locale: 'en',
+            distractionFree: false,
+            allowNegative: false
         },
         Cliente: {
           Nombre: '',
@@ -366,6 +378,7 @@
         labelCompraVenta:"Compra",
         currentValue:true,
         saberTab: false, // True = Compra y Venta | False = Cheques
+        PrecioString:"",
       }
     },
     mounted(){
@@ -375,7 +388,15 @@
 
       this.getClientes();
     },
+    watch:{
+        PrecioString() {
+
+         this.Transaccion.Precio = getValue(this.$refs.precio);
+
+            }
+    },
     computed: {
+
           calcularCambio : function(){
           //venta
           var total = 0;
@@ -418,6 +439,7 @@
         this.Transaccion.CantidadPeso = '';
         this.Transaccion.CantidadDivisa = '';
         this.Transaccion.Precio = '';
+        this.PrecioString = '';
         this.Transaccion.Total = '';
         this.Transaccion.Moneda = {id:1, nombre:'Dolares'};
         this.getPrecioMoneda();
@@ -517,12 +539,12 @@
           if(this.Transaccion.CantidadPeso <= 0 && this.Transaccion.CantidadDivisa <= 0){
             this.mensajeError.push("Ambos Montos no pueden ser menor o igual a cero")
           }
-        } 
+        }
 
         if(this.Transaccion.Precio <= 0){
           this.mensajeError.push("El Precio no puede ser menor o igual a cero")
         }
-        
+
         if(this.mensajeError.length){
           this.error = 1;
         }
@@ -560,7 +582,7 @@
         if(!this.Cheque.PorcentajeComision){
           this.mensajeError.push("El Porcentaje de Comisión es un campo obligatorio")
         }
-        
+
         if(this.mensajeError.length){
           this.error = 1;
         }
@@ -578,7 +600,7 @@
         if(!this.Cliente.Apellido){
           this.mensajeError.push("El apellido es un campo obligatorio")
         }
-        
+
         if(this.mensajeError.length){
           this.error = 1;
         }
@@ -601,9 +623,9 @@
               'precioCompra'  :   item.precioCompra
             });
           });
-          
+
           this.getPrecioMoneda();
-          
+
           this.fullscreenLoading = false;
         }).catch(error => {
           if(error.response.status == 401){
@@ -619,9 +641,10 @@
         this.Monedas.forEach((item, index) => {
           if(item.id == this.Transaccion.Moneda.id){
             if (this.labelCompraVenta == 'Venta') {
-              this.Transaccion.Precio = item.precioVenta;
+              setValue(this.$refs.precio,item.precioVenta.toString());
             }else{
-              this.Transaccion.Precio = item.precioCompra;
+                 setValue(this.$refs.precio,item.precioCompra.toString());
+
             }
           }
         });

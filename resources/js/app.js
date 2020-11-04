@@ -19,6 +19,9 @@ window.Vue.use(ElementUI);
 import Swal from 'sweetalert2';
 window.Swal = Swal;
 
+import VueCurrencyInput from 'vue-currency-input'
+
+Vue.use(VueCurrencyInput)
 
 export const EventBus = new Vue();
 window.EventBus = EventBus;
