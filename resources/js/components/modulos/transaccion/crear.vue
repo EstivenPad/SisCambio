@@ -244,7 +244,8 @@
               <div class="card-footer">
                 <div class="row">
                   <div class="col-md-4 offset-4">
-                    <button class="btn btn-default btnWidth" @click.prevent="limpiarCampos">Limpiar</button>
+                    <button v-if="saberTab == true" class="btn btn-default btnWidth" @click.prevent="limpiarCamposCompraVenta">Limpiar</button>
+                    <button v-if="saberTab == false" class="btn btn-default btnWidth" @click.prevent="limpiarCamposCheque">Limpiar</button>
                     <button class="btn btn-info btnWidth" @click.prevent="setRegistrarTransaccion" v-loading.fullscreen.lock="fullscreenLoading">Registrar</button>
                   </div>
                 </div>
@@ -324,9 +325,9 @@
     components: {
       RockerSwitch
     },
-     directives: {
-    currency: CurrencyDirective
-  },
+    directives: {
+      currency: CurrencyDirective
+    },
     data(){
       return {
         Transaccion: {
@@ -391,9 +392,9 @@
     watch:{
         PrecioString() {
 
-         this.Transaccion.Precio = getValue(this.$refs.precio);
+          this.Transaccion.Precio = getValue(this.$refs.precio);
 
-            }
+        }
     },
     computed: {
 
@@ -414,7 +415,7 @@
 
           }
           //compra
-          if(this.Transaccion.Tipo ==true){
+          if(this.Transaccion.Tipo == true){
             if(this.Transaccion.CantidadDivisa > 0 && this.Transaccion.Precio > 0) {
                total = (this.Transaccion.CantidadDivisa *  this.Transaccion.Precio).toFixed(2);
 
@@ -434,7 +435,7 @@
         this.Cliente.Nombre = '';
         this.Cliente.Apellido = '';
       },
-      limpiarCampos(){
+      limpiarCamposCompraVenta(){
         this.Transaccion.Tipo = false;
         this.Transaccion.CantidadPeso = '';
         this.Transaccion.CantidadDivisa = '';
@@ -443,6 +444,18 @@
         this.Transaccion.Total = '';
         this.Transaccion.Moneda = {id:1, nombre:'Dolares'};
         this.getPrecioMoneda();
+      },
+      limpiarCamposCheque(){
+        this.Cheque.FechaEmision = '';
+        this.Cheque.Banco = '';
+        this.Cheque.Cliente = '';
+        this.Cheque.Moneda = {id: 1, nombre:'Dolares'};
+        this.Cheque.NumeroCheque = '';
+        this.Cheque.Concepto = '';
+        this.Cheque.Monto = '';
+        this.Cheque.PorcentajeComision = 2.5;
+        this.Cheque.Comision = '';
+        this.Cheque.Total = 0
       },
       limpiarCamposRegistroCliente(){
         this.Cliente.Nombre = '';
