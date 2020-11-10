@@ -33,10 +33,10 @@
                         <h2 style="font-weight:300;">Total:<span v-if="calcularCambio == null">00.0</span><span v-if="calcularCambio > 0" style="font-weight:500;">${{calcularCambio}} <span v-if="Transaccion.Tipo == true">Pesos.</span><span v-if="Transaccion.Tipo == false && Transaccion.CantidadPeso > 0">{{Transaccion.Moneda.nombre}}.</span><span v-if="Transaccion.Tipo == false && Transaccion.CantidadDivisa > 0">Pesos.</span></span></h2>
                     </div>
                 </div>
-                <el-tabs type="border-card">
+                <el-tabs type="border-card" @tab-click="checkTab">
 
                 <!-- Pestaña de Compra y Venta -->
-                <el-tab-pane label="Compra y Venta">
+                <el-tab-pane label="Compra y Venta" id="CompraVenta">
                   <form role="form" >
                     <div class="row">
 
@@ -98,15 +98,8 @@
                             </div>
                           </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-md-3 col-form-label">Total</label>
-                          <div class="col-md-9">
-                            <input type="text" class="form-control" v-model="Transaccion.Total" placeholder="Total">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6" style="display: flex;">
+
+                      <div class="offset-5 col-md-6" style="display: flex; margin-top:24px;">
                             <h2 style="font-weight:300;">Total:<span v-if="calcularCambio == null">00.0</span></h2>
                             <h2 v-if="calcularCambio > 0">${{calcularCambio}} <span v-if="Transaccion.Tipo == true">Pesos.</span></h2>
                       </div>
@@ -115,23 +108,26 @@
                 </el-tab-pane>
 
                 <!-- Pestaña de Cheques -->
-                <el-tab-pane label="Cheques">
+                <el-tab-pane label="Cheques" id="cheques">
                   <form role="form" >
                     <div class="row">
 
-                      <div class="col-md-12">
+                      <div class="col-md-4">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Fecha de emisión</label>
-                          <div class="col-md-3">
-                            <input type="date" v-model="Cheque.FechaEmision">
+                          <label class="col-md-3 col-form-label">Fecha de emisión</label>
+                          <div class="col-md-9">
+
+                             <el-date-picker v-model="Cheque.FechaEmision" type="date" placeholder="Fecha">
+                            </el-date-picker>
+
                           </div>
                         </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-4">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Banco</label>
-                          <div class="col-md-3">
+                          <label class="col-md-3 col-form-label">Banco</label>
+                          <div class="col-md-9">
                             <el-select v-model="Cheque.Banco" placeholder="Seleccione un banco">
                               <el-option
                                 v-for="item in Bancos"
@@ -144,10 +140,10 @@
                         </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-4">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Cliente</label>
-                          <div class="col-md-3">
+                          <label class="col-md-3 col-form-label">Cliente</label>
+                          <div class="col-md-9"  style="display: flex;">
                             <el-select v-model="Cheque.Cliente" placeholder="Seleccione un cliente" filterable>
                               <el-option
                                 v-for="item in Clientes"
@@ -161,10 +157,10 @@
                         </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-3">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Moneda</label>
-                          <div class="col-md-3">
+                          <label class="col-md-4 col-form-label">Moneda</label>
+                          <div class="col-md-8">
                             <select v-model="Cheque.Moneda" class="form-control">
                               <option
                                 v-for="item in Monedas"
@@ -177,19 +173,19 @@
                         </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-4">
                           <div class="form-group row">
-                            <label class="col-md-2 col-form-label">Número de Cheque</label>
-                            <div class="col-md-3">
+                            <label class="col-md-4 col-form-label"># de Cheque</label>
+                            <div class="col-md-8">
                               <input type="text" class="form-control" v-model="Cheque.NumeroCheque" placeholder="Ej. 1234">
                             </div>
                           </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-5">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Concepto</label>
-                          <div class="col-md-3">
+                          <label class="col-md-3 col-form-label">Concepto</label>
+                          <div class="col-md-9">
                             <el-input
                               type="textarea"
                               :rows="4"
@@ -200,21 +196,21 @@
                         </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-12" style="    margin-top: -35px;margin-bottom: 25px;">
                         <div class="form-group row">
                           <label class="col-md-2 col-form-label">Monto de Cheque</label>
-                          <div class="col-md-3">
+                          <div class="col-md-4">
                             <input type="number" class="form-control" v-model="Cheque.Monto">
                           </div>
                         </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Porcentaje de Comisión</label>
-                          <div class="col-md-3">
+                          <label class="col-md-3 col-form-label">% Comisión</label>
+                          <div class="col-md-9">
                             <div class="input-group mb-3">
-                              <input type="number" step="0.01" class="form-control" v-model="Cheque.PorcentajeComision">
+                              <input type="number"  step="0.01" class="form-control" v-model="Cheque.PorcentajeComision">
                               <div class="input-group-append">
                                 <span class="input-group-text">%</span>
                               </div>
@@ -223,11 +219,11 @@
                         </div>
                       </div>
 
-                      <div class="col-md-12">
+                      <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-md-2 col-form-label">Monto de Comisión</label>
-                          <div class="col-md-3">
-                            <input type="number" class="form-control" v-model="Cheque.Comision">
+                          <label class="col-md-3 col-form-label">Monto de Comisión</label>
+                          <div class="col-md-9">
+                            <input type="number" readonly class="form-control" v-model="Cheque.Comision">
                           </div>
                         </div>
                       </div>
@@ -331,7 +327,7 @@
     data(){
       return {
         Transaccion: {
-          Tipo: true,
+          Tipo: false,
           Moneda: {id:1, nombre:'Dolares'},
           CantidadPeso: 0,
           CantidadDivisa: 0,
@@ -376,10 +372,11 @@
         },
         error: 0,
         mensajeError: [],
-        labelCompraVenta:"Compra",
+        labelCompraVenta:"Venta",
         currentValue:true,
-        saberTab: false, // True = Compra y Venta | False = Cheques
+        saberTab: true, // True = Compra y Venta | False = Cheques
         PrecioString:"",
+        labelCompraVentaBool:true,
       }
     },
     mounted(){
@@ -687,6 +684,19 @@
           }
         })
       },
+      checkTab(valor){
+         if(valor.label == "Cheques"){
+             this.saberTab = false;
+             this.labelCompraVenta =  "Cheques";
+         }if(valor.label == "Compra y Venta"){
+            this.saberTab = true;
+            if(this.labelCompraVentaBool == true){
+                this.labelCompraVenta =  "Venta";
+            }else{
+                 this.labelCompraVenta =  "Compra";
+            }
+         }
+      },
       getClientes(){
         this.fullscreenLoading = true;
 
@@ -748,10 +758,12 @@
 
         if(this.Transaccion.Tipo == false){
           this.labelCompraVenta = 'Venta';
+          this.labelCompraVentaBool = true;
           $('#union').focus();
           this.getPrecioMoneda();
         }else{
           this.labelCompraVenta = 'Compra';
+          this.labelCompraVentaBool = false;
           $('#union').focus();
           this.getPrecioMoneda();
 
