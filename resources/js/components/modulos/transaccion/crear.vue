@@ -223,13 +223,13 @@
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label">Monto de Comisión</label>
                           <div class="col-md-9">
-                            <input type="number" readonly class="form-control" v-model="Cheque.Comision">
+                            <input readonly class="form-control" v-model="calcularComision">
                           </div>
                         </div>
                       </div>
 
                       <div class="col-md-6" style="display: flex;">
-                        <h2 style="font-weight:300;">Total: <span v-if="calcularCambio == ''">00.0</span></h2>
+                        <h2 style="font-weight:300;">Total:<span style="font-weight:500;" v-if="calcularComision == null">00.0</span><span v-if="calcularComision > 0" style="font-weight:500;">${{calcularComision}}</span></h2>
                       </div>
                     </div>
                   </form>
@@ -395,17 +395,17 @@
     },
     computed: {
 
-          calcularCambio : function(){
+        calcularCambio : function(){
           //venta
           var total = 0;
           if(this.Transaccion.Tipo == false){
-              if ((this.Transaccion.CantidadDivisa > 0 || this.Transaccion.CantidadPeso > 0 ) && this.Transaccion.Precio > 0) {
+              if ((this.Transaccion.CantidadDivisa > 0 || this.Transaccion.CantidadPeso > 0) && this.Transaccion.Precio > 0) {
                   if(this.Transaccion.CantidadDivisa > 0){
                     total = (this.Transaccion.CantidadDivisa * this.Transaccion.Precio).toFixed(2);
 
                   }
                   if(this.Transaccion.CantidadPeso > 0){
-                    total = (this.Transaccion.CantidadPeso /  this.Transaccion.Precio).toFixed(2);
+                    total = (this.Transaccion.CantidadPeso / this.Transaccion.Precio).toFixed(2);
 
                   }
               }
@@ -418,9 +418,21 @@
 
             }
           }
-          this.Transaccion.Total = total;
+          this.Transaccion.Comision = total;
           return total;
-      }
+        },
+
+        calcularComision: function(){
+          var total = 0;
+
+          if(this.Cheque.Monto > 0 && this.Cheque.PorcentajeComision > 0){
+            total = ((this.Cheque.Monto * this.Cheque.PorcentajeComision) / 100).toFixed(2);
+          }
+
+          this.Cheque.Total = total;
+
+          return total; 
+        }
     },
     methods: {
       abrirModal(){
@@ -736,11 +748,14 @@
           'nombre' : this.Cliente.Nombre,
           'apellido' : this.Cliente.Apellido
         }).then(response => {
+          this.Cliente = [];//Limpio los campos del registro de cliente en la pestaña de Cheque, para que no vuelva a aparecer cuando lo reabra
+          
           this.Clientes = [];//Vacio el select de Clientes para volverlo a llenar con el nuevo cliente que acabo de crear
 
           this.getClientes();//Vuelvo a cargar el select de Clientes para que aparezca el nuevo cliente que acabo de crear
 
           this.fullscreenLoading = false;
+
           this.modalShowCliente = !this.modalShowCliente;//Cierro el modal del Registro de Cliente al terminar de guardar el Cliente
         }).catch(error => {
           if(error.response.status == 401){
